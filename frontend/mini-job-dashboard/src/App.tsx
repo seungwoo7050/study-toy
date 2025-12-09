@@ -41,7 +41,6 @@ function App() {
         setError(null)
       } catch (err) {
         setError('Job 목록을 불러오는데 실패했습니다.')
-        console.error('Failed to load jobs:', err)
       } finally {
         setLoading(false)
       }
@@ -58,8 +57,7 @@ function App() {
         setJobs(jobData)
         setError(null)
       } catch (err) {
-        // 폴링 중 에러는 콘솔에만 기록 (UI에 표시하지 않음)
-        console.error('Failed to poll jobs:', err)
+        // 폴링 중 에러는 UI에 표시하지 않음
       }
     }, 10000) // 10초마다 폴링
 
@@ -78,7 +76,6 @@ function App() {
       setError(null)
     } catch (err) {
       setError('Job 생성에 실패했습니다.')
-      console.error('Failed to create job:', err)
     }
   }
 
