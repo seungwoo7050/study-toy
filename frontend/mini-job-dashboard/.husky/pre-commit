@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+. "$(dirname "$0")/_/husky.sh"
+# Prevent committing build artifacts
+ROOT_DIR=$(git rev-parse --show-toplevel)
+$ROOT_DIR/scripts/check-staged-for-artifacts.sh || exit 1
+# Run lint-staged
+npx --no-install lint-staged || exit 1
