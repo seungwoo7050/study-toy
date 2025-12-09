@@ -58,6 +58,11 @@ VITE_API_BASE_URL="http://localhost:8080/api"
 CI
 - `.github/workflows/ci.yml`에서 Gradle wrapper + Node 빌드를 수행합니다. CI는 `VITE_API_BASE_URL`을 설정하여 프론트엔드 빌드가 예상값을 사용하도록 합니다.
 
+PR, VERIFY & Tutorials
+- PR 작성 체크리스트 템플릿: `.github/PULL_REQUEST_TEMPLATE.md` (빌드/린트/테스트 체크)
+- 수동 검증 체크리스트: `VERIFY.md`
+- Git 훅 및 워크플로우 튜토리얼: `TUTORIAL_GIT_WORKFLOW.md` (수동 단계 권장)
+
 로그
 - 빌드 로그는 `build-logs/` 디렉터리에 타임스탬프 폴더로 저장됩니다.
 
