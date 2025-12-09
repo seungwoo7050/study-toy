@@ -173,3 +173,20 @@
   background-color: #6c757d;
   cursor: not-allowed;
 }
+
+/* [Order 5] 상태 표시 스타일 */
+/* - FE-F0.4: 로딩 및 에러 상태 표시를 위한 스타일 */
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border: 1px solid #f5c6cb;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
