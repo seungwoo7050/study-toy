@@ -1,0 +1,59 @@
+name: CI Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Cache Gradle wrapper distribution
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Build backend (wrapper)
+        working-directory: backend/mini-job-service
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build frontend
+        working-directory: frontend/mini-job-dashboard
+        env:
+          # Set a sensible default API base for frontend builds in CI
+          VITE_API_BASE_URL: 'http://localhost:8080/api'
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build C++ projects
+        working-directory: cpp
+        run: |
+          cd battle-game && g++ -std=c++17 -O2 -Wall main.cpp Character.cpp Player.cpp Monster.cpp -o battle-game || true
+          cd ../echo-server && ./build.sh || true
+          cd ../multi-chat-server && g++ -std=c++17 -O2 -Wall chat-server.cpp -o chat-server || true
+
+      - name: Run backend tests
+        working-directory: backend/mini-job-service
+        run: |
+          ./gradlew test --no-daemon

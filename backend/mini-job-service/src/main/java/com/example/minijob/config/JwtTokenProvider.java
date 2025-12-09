@@ -25,10 +25,10 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret:mySecretKeyForJwtTokenGenerationMinimum256BitsLongForHS256Algorithm}")
     private String secretString;
 
-    @Value("${jwt.expiration}")
+    @Value("${jwt.expiration:86400000}")
     private long expiration;
 
     private SecretKey secretKey;

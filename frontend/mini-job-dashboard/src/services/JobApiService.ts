@@ -1,10 +1,12 @@
 // [FILE] API 서비스
+/// <reference types="vite/client" />
 // [LEARN] fetch API를 사용하여 백엔드와 통신
 // [Order 5] API 서비스 구현
 
 import { Job } from '../types/Job';
 
-const API_BASE_URL = 'http://localhost:8080/api'; // 백엔드 서버 주소
+// 기본값은 로컬 개발용: Vite 환경변수 `VITE_API_BASE_URL`을 사용하면 배포/테스트 환경에서 변경 가능합니다.
+const API_BASE_URL = ((import.meta.env as any).VITE_API_BASE_URL as string) ?? 'http://localhost:8080/api'; // 백엔드 서버 주소
 
 export class JobApiService {
   // Job 목록 조회

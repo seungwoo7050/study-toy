@@ -123,6 +123,23 @@ brew install git
 # JDK 환경변수 설정
 echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 21)' >> ~/.zshrc
 source ~/.zshrc
+
+### Gradle wrapper 사용 (필요시)
+
+이 저장소는 Gradle wrapper를 사용하도록 권장합니다. Gradle을 전역으로 설치하지 않아도 프로젝트별로 제공되는 `gradlew` 스크립트를 통해 빌드/테스트를 실행할 수 있습니다.
+
+```bash
+# 예: backend 빌드
+cd /Users/woopinbell/work/toy/backend/mini-job-service
+./gradlew clean build
+```
+
+만약 `gradle-wrapper.jar`가 누락되어 있거나 wrapper를 재생성해야 하면, 전역 Gradle을 설치한 뒤 다음 명령을 실행하세요.
+
+```bash
+gradle wrapper
+```
+
 ```
 
 ### Ubuntu / Debian

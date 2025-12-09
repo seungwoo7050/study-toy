@@ -87,6 +87,24 @@ git checkout BE-v0.3
 
 태그는 **해당 버전이 README / 튜토리얼 기준으로 정상 동작하는 커밋**에 달 것.
 
+### 2.3 빌드 도구 및 Wrapper 사용 (권장)
+
+모든 Gradle 기반 서브프로젝트는 **Gradle wrapper**를 사용하도록 구성하고, wrapper 관련 파일(`gradlew`, `gradlew.bat`, `gradle/wrapper/gradle-wrapper.properties`, `gradle/wrapper/gradle-wrapper.jar`)을 저장소에 커밋해야 한다.
+
+이 방식은 **개발자가 로컬에 Gradle을 설치하지 않아도** 프로젝트를 빌드·테스트할 수 있게 해줍니다. 프로젝트를 빌드할 때는 각 서브프로젝트 루트에서 다음 명령어를 사용하세요.
+
+```bash
+cd backend/mini-job-service
+./gradlew clean build
+```
+
+만약 `gradle-wrapper.jar`가 누락되어 있다면 다음 중 하나를 사용하세요.
+
+- 같은 저장소/다른 서브프로젝트에서 해당 JAR을 복사하여 붙여넣기
+- 또는 로컬에 Gradle을 설치하고 `gradle wrapper`를 실행해 wrapper 파일을 생성
+
+Gradle을 전역으로 설치하지 않고도 개발자가 쉽게 프로젝트를 빌드할 수 있도록 **wrapper**를 우선 사용하는 것을 권장합니다.
+
 ---
 
 ## 3. 코드 주석 규칙
