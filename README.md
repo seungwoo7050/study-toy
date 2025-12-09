@@ -9,6 +9,12 @@
 
 빠른 시작
 
+Getting started (quick)
+1. Verify your environment: `tools/check-env.sh` (optional) or manually check `java -version`, `node -v`, `npm -v`, `git --version`.
+2. Set up Git hooks (manual): `git config core.hooksPath .husky` (see `TUTORIAL_GIT_WORKFLOW.md` for details).
+3. Build backend: `cd backend/mini-job-service && ./gradlew clean build`.
+4. Start frontend dev: `cd frontend/mini-job-dashboard && npm ci && npm run dev`.
+
 1) 전체 빌드 (프로젝트 루트에서):
 ```
 ./build-all.sh
