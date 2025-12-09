@@ -49,6 +49,11 @@ jobs:
           npm run test --if-present
           npm run build
 
+      - name: Frontend smoke test (serve dist)
+        run: |
+          echo "Running frontend dist smoke test"
+          ./scripts/frontend-smoke-test.sh
+
       - name: Build C++ projects
         working-directory: cpp
         run: |
