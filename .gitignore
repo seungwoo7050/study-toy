@@ -1,5 +1,6 @@
 # Ignore generated build artifacts and dependencies
 backend/mini-job-service/build/
+backend/mini-job-service/bin/
 frontend/mini-job-dashboard/dist/
 frontend/mini-job-dashboard/node_modules/
 **/node_modules/
@@ -8,3 +9,7 @@ build-logs/
 **/.gradle/
 .env
 .env.local
+cpp/battle-game/battle-game
+cpp/echo-server/server
+cpp/echo-server/client
+cpp/multi-chat-server/chat-server
