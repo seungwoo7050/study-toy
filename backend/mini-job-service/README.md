@@ -127,23 +127,49 @@ curl http://localhost:8080/health
 
 ### 서버가 바로 종료됨
 
-- `./gradlew bootRun` 로그를 확인하고, 스택트레이스를 본다.
-- BE-v0.4 이상 버전에서는 Postgres Docker 컨테이너가 떠 있는지 확인한다.
 
 ### DB 연결 오류 (connection refused / authentication failed)
 
-- `docker ps`로 postgres 컨테이너 실행 여부 확인
-- `application.yml` 또는 `.env`에 설정된 DB URL/계정을 재확인
 
 ### 포트 충돌 (8080 already in use)
 
-- 다른 프로세스가 8080을 사용 중인지 확인 후 종료하거나,
-- `application.yml`에서 서버 포트를 변경한 뒤 다시 실행한다.
 
 ```bash
 # 8080 포트 사용 프로세스 확인
 lsof -i :8080
 ```
+
+## Gradle Wrapper (권장)
+
+이 프로젝트는 **Gradle wrapper**를 사용하도록 구성되어 있습니다. 따라서 로컬에 Gradle을 설치할 필요 없이 다음 명령으로 빌드/테스트를 실행할 수 있습니다.
+
+```bash
+cd backend/mini-job-service
+./gradlew clean build
+./gradlew test
+```
+
+만약 `gradle-wrapper.jar`가 프로젝트에 누락되어 있으면, 같은 리포지토리 내 다른 프로젝트에서 복사하거나 전역 Gradle을 사용하여 wrapper를 생성할 수 있습니다.
+
+### 환경 변수/프로퍼티(런타임)
+
+실행(예: `./gradlew bootRun`) 시 구성값이 누락되어 서비스가 시작 실패할 수 있습니다. 예를 들어 `jwt.secret` 환경 변수 또는 프로퍼티가 없을 경우 필수 구성으로 간주됩니다.
+
+런타임에서 `jwt.secret`이 누락되면 기본 값이 사용되도록 `JwtTokenProvider`에 기본값을 설정했습니다. 권장 방식은 환경변수를 통해 값을 주입하는 것입니다:
+
+ - `jwt.secret`이 누락되면 기본 값이 사용되도록 `JwtTokenProvider`에 기본값을 설정했습니다. 그러나 **프로덕션 환경에서는 절대로 기본값을 사용하지 마세요.** 환경 변수를 통해 값을 주입해야 합니다. 예시(.env의 내용을 `backend/mini-job-service/.env.example`로 제공):
+
+```bash
+# 환경변수 설정 (Linux/macOS)
+export JWT_SECRET="yourSuperSecureSecretHere"
+export JWT_EXPIRATION=86400000
+# 로컬 실행
+./gradlew bootRun
+```
+
+또는 `.env`/도커/시스템 서비스에 환경변수로 제공하세요.
+
+또는 `application.yml`에서 값을 수정해도 됩니다.
 
 ### Gradle 빌드 실패
 
