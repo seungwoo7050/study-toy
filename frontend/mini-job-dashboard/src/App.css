@@ -190,3 +190,19 @@
   padding: 2rem;
   color: #666;
 }
+
+/* [Order 6] 상태 표시기 스타일 */
+/* - FE-F0.5: 실시간 상태 모니터링 표시를 위한 스타일 */
+.status-indicator {
+  background-color: #e7f3ff;
+  color: #0066cc;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border: 1px solid #b3d9ff;
+  font-size: 0.9rem;
+}
+
+.polling-status {
+  font-weight: 500;
+}

@@ -30,7 +30,8 @@ function App() {
 
   // [Order 3] Job 목록 로드
   // - FE-F0.4: 컴포넌트 마운트 시 API에서 Job 목록을 불러옴
-  // [LEARN] useEffect를 사용하여 컴포넌트 마운트 시 데이터를 불러옴
+  // - FE-F0.5: Job 상태 폴링 기능 추가
+  // [LEARN] useEffect를 사용하여 컴포넌트 마운트 시 데이터를 불러오고, 주기적으로 업데이트
   useEffect(() => {
     const loadJobs = async () => {
       try {
@@ -47,6 +48,23 @@ function App() {
     }
 
     loadJobs()
+
+    // [Order 5] Job 상태 폴링
+    // - FE-F0.5: 10초마다 Job 상태를 확인하여 업데이트
+    // [LEARN] setInterval을 사용하여 주기적으로 Job 상태를 폴링
+    const pollInterval = setInterval(async () => {
+      try {
+        const jobData = await JobApiService.getJobs()
+        setJobs(jobData)
+        setError(null)
+      } catch (err) {
+        // 폴링 중 에러는 콘솔에만 기록 (UI에 표시하지 않음)
+        console.error('Failed to poll jobs:', err)
+      }
+    }, 10000) // 10초마다 폴링
+
+    // 컴포넌트 언마운트 시 인터벌 정리
+    return () => clearInterval(pollInterval)
   }, [])
 
   // [Order 4] Job 생성 핸들러
@@ -68,6 +86,10 @@ function App() {
     <>
       <div>
         <h1>Mini Job Dashboard</h1>
+
+        <div className="status-indicator">
+          <span className="polling-status">🔄 실시간 상태 모니터링 중 (10초 간격)</span>
+        </div>
 
         {error && (
           <div className="error-message">
