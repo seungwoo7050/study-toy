@@ -1,0 +1,38 @@
+# Docker Compose Configuration
+# 토이 버전: [BE-v0.4]+
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: minijob-postgres
+    environment:
+      POSTGRES_DB: minijob
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 애플리케이션 (선택적으로 사용)
+  # app:
+  #   build: .
+  #   container_name: minijob-app
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: postgres
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/minijob
+  #   ports:
+  #     - "8080:8080"
+
+volumes:
+  postgres_data:
