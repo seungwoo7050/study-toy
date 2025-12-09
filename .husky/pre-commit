@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Root-level git pre-commit hook to prevent committing build artifacts
+ROOT_DIR=$(git rev-parse --show-toplevel)
+exec "$ROOT_DIR/scripts/check-staged-for-artifacts.sh"
