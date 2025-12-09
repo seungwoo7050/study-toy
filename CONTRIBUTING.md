@@ -42,12 +42,10 @@
  - 모든 Pull Request는 CI를 통과해야 합니다. PR 템플릿에 체크리스트를 넣어 `build`, `lint`, `test`를 확인하도록 유도하세요.
 
 ### pre-commit 훅
-- 이 리포지토리는 불필요한 빌드/CLI 산출물이 커밋되는 것을 방지하기 위해 root-level git pre-commit hook을 제공합니다. 로컬 개발환경에서 Git 훅이 사용되도록 하려면 다음을 확인하세요:
-  - 루트에서 실행: `git config core.hooksPath .husky` (일회성 설정, 다른 개발자에게 공유 필요)
-  - 프론트엔드 디렉터리에서는 `husky`와 `lint-staged`가 설정되어 있습니다. `npm ci` 후 첫 설치 시 `prepare` 스크립트가 훅을 설정합니다.
-- pre-commit 훅은 기본적으로 다음을 수행합니다:
-  - `scripts/check-staged-for-artifacts.sh` 를 실행하여 `node_modules/`, `dist/`, `build/`, `*.class`, `*.jar` 등의 신규 스테이징 파일을 차단
-  - 프론트엔드의 경우, `lint-staged`를 통해 staged `*.{ts,tsx}` 파일들에 대해 eslint 자동수정을 실행
+## Hook activation notes (Windows / WSL / mac)
+ - On macOS / Linux: `git config core.hooksPath .husky` (per-repo setting) is recommended.
+ - On Windows (Git Bash/WSL): run in Bash environment or enable hooks in WSL; if using plain Windows shell, you may need to enable executable hooks or run `npx husky install` inside the project folder.
+ - If students see `cannot run hooks` or `permission denied`, double-check file permissions: `chmod +x .husky/*` and ensure `git config core.hooksPath` points correctly.
 
 ### 훅 건너뛰기 (주의)
 - 어떠한 이유로 훅을 무시해야 하는 경우(예: 대량 리포지토리 리팩토리 작업 등)에는 `git commit --no-verify` 옵션을 사용하세요. 다만 이는 일시적 조치로, PR 전에 반드시 훅을 다시 켜고 CI를 통과해야 합니다.
