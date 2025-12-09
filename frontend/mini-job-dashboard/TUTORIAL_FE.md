@@ -1,4 +1,3 @@
-[FILE] frontend/mini-job-dashboard/src/App.tsx
 [Order 1]
 # Mini Job Dashboard - Frontend 튜토리얼
 
@@ -12,7 +11,7 @@
 1. 프로젝트 루트로 이동:
    - `cd frontend/mini-job-dashboard`
 2. 의존성 설치:
-   - `npm ci`
+   - 권장: `npm ci` (lockfile 기반 안정적 설치)
 3. 개발 서버 실행 (hot reload):
    - `npm run dev`
    - 브라우저에서 `http://localhost:5173` (Vite 기본 포트) 열기

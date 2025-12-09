@@ -1,5 +1,3 @@
-[FILE] README.md
-[Order 1]
 # toy
 
 작은 학습용 프로젝트 모음입니다. 백엔드(Java Spring Boot), 프론트엔드(React + Vite), C++ 예제들이 포함되어 있습니다.
@@ -7,7 +5,6 @@
 목표
 - 로컬에서 각 모듈을 빌드하고 실행하는 방법을 문서화
 - Gradle wrapper 기반 빌드를 권장 (전역 Gradle 설치 불필요)
- - 프론트엔드는 Vite 환경변수 `VITE_API_BASE_URL`을 통해 백엔드 엔드포인트를 설정할 수 있습니다. (예: `http://localhost:8080/api`)
  - 프론트엔드는 Vite 환경변수 `VITE_API_BASE_URL`을 통해 백엔드 엔드포인트를 설정할 수 있습니다. (예: `http://localhost:8080/api`)
 
 빠른 시작
@@ -35,7 +32,7 @@ chmod +x ./gradlew
 java -jar build/libs/mini-job-service-0.0.1-SNAPSHOT.jar
 ```
 
-3) 프론트엔드 개발 서버 / 빌드:
+3) 프론트엔드 개발 서버 / 빌드 (권장: `npm ci`로 의존성 고정 설치):
 ```
 cd frontend/mini-job-dashboard
 npm ci
@@ -57,6 +54,10 @@ CI
 
 로그
 - 빌드 로그는 `build-logs/` 디렉터리에 타임스탬프 폴더로 저장됩니다.
+
+참고:
+- `node_modules/`, `dist/`, `build/`와 같이 CLI/빌드로 생성되는 산출물은 저장소에 커밋하지 않습니다. `.gitignore`를 확인하세요.
+- `package-lock.json`(프론트엔드)와 `gradle-wrapper.jar`(백엔드)는 reproducible build를 위해 보통 커밋하는 것을 권장합니다.
 
 [LEARN]
 - 학습용 프로젝트로, 프로덕션 수준의 보안/비밀 관리는 본문서에 포함되지 않습니다. JWT 등의 비밀값은 로컬 개발에서는 테스트용 기본값을 사용하지만, 실제 운영 시에는 환경변수/시크릿 매니저를 사용하세요.

@@ -65,8 +65,8 @@ React 기반의 Job 관리 대시보드 UI입니다.
 # 프로젝트 디렉토리로 이동
 cd frontend/mini-job-dashboard
 
-# 의존성 설치
-npm install
+# 의존성 설치 (권장: `npm ci` - lockfile 기반 설치)
+npm ci
 
 # 개발 서버 실행
 npm run dev
@@ -106,7 +106,7 @@ VITE_API_BASE_URL=http://localhost:8080/api
 
 ## Troubleshooting
 
-### `npm install` 에러
+### `npm ci` 또는 `npm install` 에러
 
 - Node.js 버전이 ENV_SETUP.md에 명시된 버전 이상인지 확인한다.
 - `node -v`로 버전 확인
