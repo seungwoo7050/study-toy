@@ -1,0 +1,10 @@
+# Ignore generated build artifacts and dependencies
+backend/mini-job-service/build/
+frontend/mini-job-dashboard/dist/
+frontend/mini-job-dashboard/node_modules/
+**/node_modules/
+build-logs/
+/.gradle/
+**/.gradle/
+.env
+.env.local

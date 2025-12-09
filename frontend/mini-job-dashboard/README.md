@@ -91,13 +91,16 @@ npm run dev
 
 | 변수 | 기본값 | 설명 |
 |------|--------|------|
-| `VITE_API_URL` | `http://localhost:8080` | 백엔드 API URL |
+| `VITE_API_BASE_URL` | `http://localhost:8080/api` | 백엔드 API URL |
 
-`.env.local` 파일을 생성하여 설정할 수 있습니다:
+`.env.local` 파일을 생성하여 설정할 수 있습니다. `VITE_API_BASE_URL` 값을 설정하세요:
 
 ```env
-VITE_API_URL=http://localhost:8080
+VITE_API_BASE_URL=http://localhost:8080/api
 ```
+
+빌드 후 생성된 `dist/`는 기본적으로 git에 포함하지 않도록 `.gitignore`에 추가되어야 합니다.
+또한 빌드 결과와 로그를 정리하려면 루트의 `./scripts/cleanup-build-results.sh`을 사용하세요.
 
 ---
 
