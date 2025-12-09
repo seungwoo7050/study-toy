@@ -30,8 +30,8 @@
     "vite": "^5.0.8"
   },
   "lint-staged": {
-    "{\"*": {
-      "{ts,tsx}\"}": "[\"npm run lint --\"]"
-    }
+    "*.{ts,tsx}": [
+      "npm run lint --"
+    ]
   }
 }
