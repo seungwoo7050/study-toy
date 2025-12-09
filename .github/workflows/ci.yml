@@ -44,6 +44,9 @@ jobs:
           VITE_API_BASE_URL: 'http://localhost:8080/api'
         run: |
           npm ci
+          # Lint before build and run tests if any (non-failing when no tests present)
+          npm run lint --if-present
+          npm run test --if-present
           npm run build
 
       - name: Build C++ projects
