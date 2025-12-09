@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Check for common generated/build artifacts staged for commit
-STAGED_FILES=$(git diff --cached --name-only)
+STAGED_FILES=$(git diff --cached --name-status --diff-filter=AM | awk '{print $2}')
 BAD_PATTERNS=(
   "node_modules/"
   "dist/"
