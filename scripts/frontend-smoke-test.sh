@@ -24,9 +24,14 @@ fi
 echo "Serving frontend dist on :8081 and checking /"
 ## 간단한 정적 서버를 백그라운드로 실행합니다. 로그는 /tmp/http-server.log에 기록됩니다.
 ## CI에서 npx가 http-server를 내려받는 시간을 고려하여 준비 완료까지 재시도합니다.
-npx --yes http-server dist -p 8081 >/tmp/http-server.log 2>&1 &
+# 새 세션으로 실행하여 모든 하위 프로세스를 한 번에 정리할 수 있도록 합니다.
+setsid npx --yes http-server dist -p 8081 >/tmp/http-server.log 2>&1 &
 PID=$!
-trap 'kill $PID >/dev/null 2>&1 || true' EXIT
+cleanup() {
+  # http-server가 하위 프로세스를 남기더라도 프로세스 그룹 전체를 종료합니다.
+  kill -- -$PID >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
 
 MAX_WAIT=15
 START=$(date +%s)
