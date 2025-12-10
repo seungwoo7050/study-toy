@@ -44,6 +44,13 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Build backend (Node.js)
+        working-directory: backend/mini-job-service-node
+        run: |
+          npm install
+          npm run build
+          npm test
+
       - name: Build frontend
         working-directory: frontend/mini-job-dashboard
         env:
