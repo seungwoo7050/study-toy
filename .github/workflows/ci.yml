@@ -1,5 +1,12 @@
 name: CI Build
 
+# Repository CI Workflow
+# Purpose: main branch에 대한 빌드와 기본 검증을 실행합니다.
+# - backend 빌드 및 테스트 (Gradle wrapper 권장)
+# - frontend lint, build, E2E (Playwright) 및 dist 스모크 테스트
+# - 간단한 C++ 빌드 확인
+# 참고: 로컬에서 스크립트나 빌드 동작을 따라가려면 `DOCS/SCRIPTS.md`를 참고하세요.
+
 on:
   push:
     branches: [main]
@@ -46,13 +53,26 @@ jobs:
           npm ci
           # Lint before build and run tests if any (non-failing when no tests present)
           npm run lint --if-present
-          npm run test --if-present
+          npm run test:unit --if-present
           npm run build
 
       - name: Frontend smoke test (serve dist)
         run: |
           echo "Running frontend dist smoke test"
           ./scripts/frontend-smoke-test.sh
+
+      - name: Frontend: Install Playwright browsers
+        working-directory: frontend/mini-job-dashboard
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Frontend: Run Playwright E2E tests
+        working-directory: frontend/mini-job-dashboard
+        run: |
+          npm ci
+          # The tests will run against the served dist at http://localhost:8081
+          npm run test:e2e
 
       - name: Build C++ projects
         working-directory: cpp

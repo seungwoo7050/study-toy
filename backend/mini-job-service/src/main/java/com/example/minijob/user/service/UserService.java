@@ -63,6 +63,9 @@ public class UserService {
     }
 
     // [Order 4] 이메일로 사용자 조회
+    // [LEARN] 이 메서드는 사용자 존재가 반드시 전제되어 호출되는 경우에 사용합니다.
+    //         호출부가 존재 여부를 명확히 알지 못하면 Optional을 반환하는 메서드를 사용하세요.
+    //         (예: `Optional<User> findByEmailOptional(String email)` 방식)
     public User findByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));

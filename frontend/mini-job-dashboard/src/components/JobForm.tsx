@@ -13,6 +13,9 @@ const JobForm: React.FC<JobFormProps> = ({ onJobCreate }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
+  // [LEARN] handleSubmit는 폼 제출을 캡쳐하여 페이지 리로드를 방지하고,
+  //         상위 컴포넌트가 정의한 `onJobCreate` 콜백으로 데이터를 전달합니다.
+  //         클라이언트측 유효성 검사는 UX 향상에 유용하지만 서버 측 검증을 대체하지 않습니다.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim() && description.trim()) {

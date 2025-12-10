@@ -38,6 +38,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // [Order 2] 필터 처리
     // [LEARN] 토큰이 유효하면 SecurityContextHolder에 인증 정보를 설정한다.
     @Override
+    // [LEARN] Servlet Filter의 doFilterInternal 메서드는 요청이 들어올 때마다 호출됩니다.
+    //         여기서는 JWT 토큰 파싱/검증 로직을 수행하고 인증 정보를 SecurityContext에 설정합니다.
+    //         실제 배포 환경에서는 예외 처리와 로깅 정책을 강화하세요.
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {

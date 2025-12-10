@@ -9,6 +9,8 @@ interface JobListProps {
   jobs: Job[];
 }
 
+// [LEARN] JobList 컴포넌트는 props로 받은 Job 배열을 그리디 형태로 렌더링합니다.
+//         빈 목록 처리와 리스트 렌더링을 확인하여 UI가 항상 일관된 상태를 가지도록 합니다.
 const JobList: React.FC<JobListProps> = ({ jobs }) => {
   return (
     <div className="job-list">

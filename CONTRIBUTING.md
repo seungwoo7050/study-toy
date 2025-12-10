@@ -21,6 +21,7 @@
   - `cd frontend/mini-job-dashboard`
   - `npm ci` (권장, lockfile 기반 재현 가능한 설치)
   - `npm run dev` (개발 서버)
+  - `npm run test:unit` (Vitest 기반 간단 단위 테스트 - 학습 목적)
   - `npm run build` (프로덕션 번들 생성)
 
 - 백엔드:
@@ -53,6 +54,9 @@
 
 ## 기타
 - 빌드 산출물(더 이상 필요하지 않은 로그/이전 빌드 기록)은 `scripts/cleanup-build-results.sh`를 사용해서 정리하세요.
+- 빌드 산출물(더 이상 필요하지 않은 로그/이전 빌드 기록)은 `scripts/cleanup-build-results.sh`를 사용해서 정리하세요.
+
+참고: 리포지토리에 포함된 모든 스크립트와 사용법(예: 빌드/검증/클린업)을 `DOCS/SCRIPTS.md`에 정리해 두었습니다. 새 스크립트를 추가할 때는 해당 파일의 상단에 목적/사용법 주석을 추가하고 `DOCS/SCRIPTS.md`에 등록하세요.
 - 저장소에 큰 바이너리(예: `node_modules`, 컴파일된 바이너리)를 실수로 커밋했다면 `git filter-repo` 또는 BFG를 사용하여 역사를 정리할 수 있습니다.
 
 감사합니다!

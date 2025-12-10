@@ -28,5 +28,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     List<Job> findByStatus(String status);
 
     // 타입별 Job 조회
+    // [LEARN] Spring Data JPA의 메서드 네이밍으로 쿼리 생성을 학습하세요.
     List<Job> findByType(String type);
 }

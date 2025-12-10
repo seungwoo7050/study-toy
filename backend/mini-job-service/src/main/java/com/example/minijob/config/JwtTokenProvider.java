@@ -34,6 +34,8 @@ public class JwtTokenProvider {
     private SecretKey secretKey;
 
     @PostConstruct
+    // [LEARN] 빈 생성 직후 초기화 로직은 @PostConstruct로 실행되며,
+    //         이곳에서 SecretKey 같은 필수 자원을 준비합니다.
     public void init() {
         this.secretKey = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
     }
