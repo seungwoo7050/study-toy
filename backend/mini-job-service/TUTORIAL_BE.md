@@ -6,73 +6,84 @@
 
 ---
 
+
 ## BE-v0.1 – 헬스체크까지
 
 ### 1. 사전 준비
-
 - 필요한 선행 버전: 없음
 - 필요한 도구: JDK 21, Gradle (ENV_SETUP.md 참고)
 
 ### 2. 코드 체크아웃 (선택)
-
 ```bash
 git checkout BE-v0.1
 ```
 
-### 3. 실행
+### 3. 구현 및 커밋
+- `HealthController` 클래스를 만들고 `/health` 엔드포인트를 구현하세요.
+- **Tip:** `@RestController`와 `@GetMapping`을 사용합니다.
 
+💡 **[Git Commit Tip]**
+구현을 마쳤다면 아래와 같이 커밋하세요:
+```bash
+GIT_AUTHOR_DATE="2025-01-02 18:00:00" GIT_COMMITTER_DATE="2025-01-02 18:00:00" git commit -m "feat: add health check endpoint"
+```
+
+### 4. 실행
 ```bash
 cd backend/mini-job-service
 ./gradlew bootRun
 ```
 
-### 4. 동작 확인
-
+### 5. 동작 확인
 ```bash
 curl http://localhost:8080/health
 ```
-
 **기대 응답:**
 ```json
 {"status":"ok"}
 ```
 
-### 5. 이 단계에서 배우는 것
-
+### 6. 이 단계에서 배우는 것
 - Spring Boot 앱 실행 방법
 - @RestController를 이용한 간단한 엔드포인트 구현
 - 헬스체크 엔드포인트의 역할
 
 ---
 
+
 ## BE-v0.2 – 메모리 기반 Job CRUD
 
 ### 1. 사전 준비
-
 - 필요한 선행 버전: BE-v0.1
 - 필요한 도구: JDK 21, Gradle
 
 ### 2. 코드 체크아웃 (선택)
-
 ```bash
-git checkout BE-v0.2
+
 ```
 
-### 3. 실행
+### 3. 구현 및 커밋
+- `Job`, `JobRepository`, `JobController`를 추가하여 메모리 기반 CRUD를 구현하세요.
+- **Tip:** `@Repository`, `@RestController`, DTO 패턴을 활용합니다.
 
+💡 **[Git Commit Tip]**
+구현을 마쳤다면 아래와 같이 커밋하세요:
+```bash
+GIT_AUTHOR_DATE="2025-01-04 20:00:00" GIT_COMMITTER_DATE="2025-01-04 20:00:00" git commit -m "feat: implement in-memory Job CRUD"
+```
+
+### 4. 실행
 ```bash
 ./gradlew bootRun
 ```
 
-### 4. 동작 확인
-
+### 5. 동작 확인
 **Job 생성:**
 ```bash
 curl -X POST http://localhost:8080/api/jobs \
   -H "Content-Type: application/json" \
   -d '{"type": "VIDEO_TRIM", "payload": "{\"duration\": 60}"}'
 ```
-
 **기대 응답:**
 ```json
 {
@@ -83,28 +94,23 @@ curl -X POST http://localhost:8080/api/jobs \
   "createdAt": "2024-01-15T10:30:00"
 }
 ```
-
 **Job 목록 조회:**
 ```bash
 curl http://localhost:8080/api/jobs
 ```
-
 **단일 Job 조회:**
 ```bash
 curl http://localhost:8080/api/jobs/1
 ```
-
 **Job 삭제:**
 ```bash
 curl -X DELETE http://localhost:8080/api/jobs/1
 ```
 
-### 5. 이 단계에서 배우는 것
-
+### 6. 이 단계에서 배우는 것
 - REST API 설계 (GET, POST, DELETE)
 - DTO 패턴 (CreateJobRequest, JobResponse)
 - 메모리 기반 Repository 패턴
-
 ---
 
 ## BE-v0.3 – H2 + JPA 기반 Job 영속화

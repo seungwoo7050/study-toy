@@ -7,20 +7,54 @@
 - Node.js (권장 LTS) 및 `npm`이 설치되어 있어야 합니다. macOS에서는 `brew install node` 또는 nvm을 사용하세요.
 - 로컬에서 백엔드(`backend/mini-job-service`)가 `http://127.0.0.1:8080`에서 실행되어 있어야 합니다.
 
-빠른 시작
+
+빠른 시작 및 단계별 실습
 1. 프로젝트 루트로 이동:
    - `cd frontend/mini-job-dashboard`
+   - **[Git Commit Tip]**
+     ```bash
+     GIT_AUTHOR_DATE="2025-01-03 10:00:00" GIT_COMMITTER_DATE="2025-01-03 10:00:00" git commit -m "chore: initialize React project with Vite"
+     ```
 2. 의존성 설치:
    - 권장: `npm ci` (lockfile 기반 안정적 설치)
-3. 개발 서버 실행 (hot reload):
-   - `npm run dev`
-4. Unit tests (local learning):
-   - 프론트엔드 단위 테스트를 추가/학습하고 싶다면 Vitest를 사용합니다.
-   - 실행:
-      - `cd frontend/mini-job-dashboard`
-      - `npm ci`
-      - `npm run test:unit`
-   - 브라우저에서 `http://localhost:5173` (Vite 기본 포트) 열기
+3. 기본 레이아웃 및 라우팅 구현:
+   - App.tsx, 라우팅 구조 설계
+   - **[Git Commit Tip]**
+     ```bash
+     GIT_AUTHOR_DATE="2025-01-04 17:00:00" GIT_COMMITTER_DATE="2025-01-04 17:00:00" git commit -m "feat: add base layout and routing"
+     ```
+4. Job 리스트 컴포넌트(dummy 데이터):
+   - `JobList.tsx` 생성, 더미 데이터 렌더링
+   - **[Git Commit Tip]**
+     ```bash
+     GIT_AUTHOR_DATE="2025-01-05 19:00:00" GIT_COMMITTER_DATE="2025-01-05 19:00:00" git commit -m "feat: render job list with dummy data"
+     ```
+5. Job 생성 폼 및 상태 관리:
+   - `JobForm.tsx` 생성, useState로 폼 상태 관리
+   - **[Git Commit Tip]**
+     ```bash
+     GIT_AUTHOR_DATE="2025-01-07 20:00:00" GIT_COMMITTER_DATE="2025-01-07 20:00:00" git commit -m "feat: add job creation form and state management"
+     ```
+6. 백엔드 REST API 연동(GET/POST):
+   - `JobApiService.ts`에서 fetch/axios로 API 연동
+   - **[Git Commit Tip]**
+     ```bash
+     GIT_AUTHOR_DATE="2025-01-09 18:00:00" GIT_COMMITTER_DATE="2025-01-09 18:00:00" git commit -m "feat: connect to backend REST API"
+     ```
+7. Job 상태 폴링 및 실시간 갱신:
+   - setInterval 등으로 주기적 데이터 갱신
+   - **[Git Commit Tip]**
+     ```bash
+     GIT_AUTHOR_DATE="2025-01-11 21:00:00" GIT_COMMITTER_DATE="2025-01-11 21:00:00" git commit -m "feat: implement polling for job status"
+     ```
+8. E2E 테스트 및 CI 연동:
+   - Playwright, Vitest, CI 설정
+   - **[Git Commit Tip]**
+     ```bash
+     GIT_AUTHOR_DATE="2025-01-13 19:00:00" GIT_COMMITTER_DATE="2025-01-13 19:00:00" git commit -m "test: add Playwright E2E tests and CI integration"
+     ```
+
+---
 
 프로덕션 빌드 및 정적 파일 확인
 1. 빌드:
@@ -34,10 +68,9 @@
 - 프론트엔드는 `src/services/JobApiService.ts`에서 백엔드 엔드포인트를 사용합니다.
 - 기본은 `http://localhost:8080/api` 입니다. (또는 `http://127.0.0.1:8080/api`)
 - Vite 환경변수로 값을 오버라이드하려면 프로젝트 루트에 `.env` 파일을 만들고 `VITE_API_BASE_URL`을 설정하세요. 예:
-
-```
-VITE_API_BASE_URL="http://staging.example.com/api"
-```
+  ```
+  VITE_API_BASE_URL="http://staging.example.com/api"
+  ```
 
 프론트엔드 코드는 `import.meta.env.VITE_API_BASE_URL`를 읽어 사용하므로 개발/배포 환경에 맞춰 쉽게 변경할 수 있습니다.
 - 필요하면 `JobApiService.ts`의 `BASE_URL`을 변경하거나, 빌드 시 환경 변수를 주입하도록 Vite 설정을 업데이트하세요.
