@@ -54,6 +54,16 @@
      GIT_AUTHOR_DATE="2025-01-13 19:00:00" GIT_COMMITTER_DATE="2025-01-13 19:00:00" git commit -m "test: add Playwright E2E tests and CI integration"
      ```
 
+테스트/품질 체크 빠르게 확인하기
+- 유닛 테스트: `npm run test:unit`
+- E2E 테스트: `npx playwright install --with-deps`로 브라우저를 설치한 뒤 `npm run test:e2e`
+- 정적 분석: `npm run lint` (실행 전 `node`와 `npm` 버전을 README의 권장 버전과 맞춰주세요)
+
+백엔드-프론트엔드 연동 스모크 테스트
+1) 백엔드 실행(`./gradlew bootRun`) 후 `http://127.0.0.1:8080/api/jobs`가 200을 반환하는지 curl로 확인합니다.
+2) 프론트엔드 개발 서버 실행: `npm run dev -- --host` (다른 장치에서 테스트할 때 유용)
+3) 브라우저에서 Job 생성 → 목록이 자동 갱신되는지 확인합니다. 네트워크 탭에서 요청이 `VITE_API_BASE_URL`로 향하는지와 응답 코드(2xx/4xx/5xx)를 함께 확인하세요.
+
 ---
 
 프로덕션 빌드 및 정적 파일 확인
