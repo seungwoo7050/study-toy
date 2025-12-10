@@ -59,7 +59,7 @@ curl http://localhost:8080/health
 
 ### 2. 코드 체크아웃 (선택)
 ```bash
-
+git checkout BE-v0.2
 ```
 
 ### 3. 구현 및 커밋
@@ -107,6 +107,8 @@ curl http://localhost:8080/api/jobs/1
 curl -X DELETE http://localhost:8080/api/jobs/1
 ```
 
+> ℹ️ **Tip:** 메모리 기반 저장소이므로 애플리케이션을 재시작하면 데이터가 초기화됩니다. 여러 번 시험할 때는 위 요청들을 순서대로 다시 실행하세요.
+
 ### 6. 이 단계에서 배우는 것
 - REST API 설계 (GET, POST, DELETE)
 - DTO 패턴 (CreateJobRequest, JobResponse)
@@ -131,6 +133,8 @@ git checkout BE-v0.3
 ```bash
 ./gradlew bootRun
 ```
+
+> ✅ **추가 검증:** `./gradlew test`를 실행해 JPA 엔티티/리포지토리 단위 테스트가 통과하는지 확인합니다. 로컬 H2 인메모리 DB를 사용하므로 별도 설정 없이 바로 실행됩니다.
 
 ### 4. 동작 확인
 
@@ -192,6 +196,8 @@ docker ps
 ```bash
 ./gradlew bootRun --args='--spring.profiles.active=postgres'
 ```
+
+> ℹ️ **환경 변수 힌트:** 기본 `.env.example`에 맞춰 `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` 값을 변경한 경우 `application-postgres.yml`의 접속 정보도 함께 맞춰주세요. 실행 로그에서 `Flyway`가 성공적으로 마이그레이션을 적용했는지 (`Successfully applied n migration`) 확인하면 DB 스키마가 준비된 것입니다.
 
 ### 5. 동작 확인
 
