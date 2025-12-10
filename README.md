@@ -9,7 +9,8 @@
 
 | 영역 | 주요 기술/개념 | 실습 예시 |
 |------|----------------|-------------------------------|
-| 백엔드 | Spring Boot, JPA, JWT, REST, CI | 엔드포인트 구현, DB 연동, 인증/인가, 예외처리, 테스트, CI |
+| 백엔드 (Spring) | Spring Boot, JPA, JWT, REST, CI | 엔드포인트 구현, DB 연동, 인증/인가, 예외처리, 테스트, CI |
+| 백엔드 (Node) | Express, TypeScript, JWT, REST | 동일한 Job API를 Node.js 스택으로 구현, 인메모리 저장, 테스트 |
 | 프론트엔드 | React, Vite, 상태관리, E2E, API | 컴포넌트/상태, 폼, API 연동, E2E/단위테스트, 환경변수 |
 | C++ | OOP, 네트워크, 멀티스레드 | 클래스 설계, TCP 서버/클라, 채팅, 빌드/실행 |
 
@@ -21,9 +22,10 @@
 1. **환경 설정**: [`ENV_SETUP.md`](./ENV_SETUP.md)를 먼저 읽고 개발 환경을 준비하세요.
 2. **전체 로드맵 파악**: [`ROOT_ROADMAP.md`](./ROOT_ROADMAP.md)에서 전체 학습 흐름과 각 프로젝트의 목표를 확인하세요.
 3. **실습 진행**: 각 프로젝트별 튜토리얼을 단계별로 따라 하세요.
-	- [백엔드 튜토리얼](./backend/mini-job-service/TUTORIAL_BE.md)
-	- [프론트엔드 튜토리얼](./frontend/mini-job-dashboard/TUTORIAL_FE.md)
-	- [C++ 튜토리얼](./cpp/TUTORIAL_CPP.md)
+        - [백엔드 튜토리얼 (Spring)](./backend/mini-job-service/TUTORIAL_BE.md)
+        - [백엔드 튜토리얼 (Node)](./backend/mini-job-service-node/TUTORIAL_BE_NODE.md)
+        - [프론트엔드 튜토리얼](./frontend/mini-job-dashboard/TUTORIAL_FE.md)
+        - [C++ 튜토리얼](./cpp/TUTORIAL_CPP.md)
 4. **스크립트/유틸 참고**: 필요시 [`DOCS/SCRIPTS.md`](./DOCS/SCRIPTS.md)에서 빌드/테스트/정리 스크립트 사용법을 확인하세요.
 
 ---
@@ -37,10 +39,11 @@
 
 ## 디렉터리 구조
 ```
-├── backend/                # 백엔드(Spring Boot)
-│   └── mini-job-service/   # Job 관리 REST API
-│       ├── src/            # Java, 리소스, 마이그레이션 등
-│       ├── build.gradle    # Gradle 빌드 파일
+├── backend/                # 백엔드(Spring Boot + Node.js)
+│   ├── mini-job-service/       # Job 관리 REST API (Spring)
+│   └── mini-job-service-node/  # Job 관리 REST API (Express + TS)
+│       ├── src/                # TypeScript 소스
+│       ├── package.json        # npm 스크립트/의존성
 │       └── ...
 ├── frontend/               # 프론트엔드(React + Vite)
 │   └── mini-job-dashboard/ # Job 대시보드 UI
@@ -66,8 +69,9 @@
 
 1. 환경 확인: `tools/check-env.sh` (또는 수동으로 `java -version`, `node -v`, `npm -v`, `git --version` 확인)
 2. Git hooks 설정(수동): `git config core.hooksPath .husky` (자세한 내용은 `TUTORIAL_GIT_WORKFLOW.md` 참고)
-3. 백엔드 빌드: `cd backend/mini-job-service && ./gradlew clean build`
-4. 프론트엔드 개발 서버: `cd frontend/mini-job-dashboard && npm ci && npm run dev`
+3. 백엔드 빌드(Spring): `cd backend/mini-job-service && ./gradlew clean build`
+4. 백엔드 빌드(Node): `cd backend/mini-job-service-node && npm install && npm test`
+5. 프론트엔드 개발 서버: `cd frontend/mini-job-dashboard && npm ci && npm run dev`
 
 ### 전체 빌드 (루트에서)
 ```bash

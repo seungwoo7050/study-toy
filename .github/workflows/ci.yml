@@ -1,12 +1,5 @@
 name: CI Build
 
-# Repository CI Workflow
-# Purpose: main branch에 대한 빌드와 기본 검증을 실행합니다.
-# - backend 빌드 및 테스트 (Gradle wrapper 권장)
-# - frontend lint, build, E2E (Playwright) 및 dist 스모크 테스트
-# - 간단한 C++ 빌드 확인
-# 참고: 로컬에서 스크립트나 빌드 동작을 따라가려면 `DOCS/SCRIPTS.md`를 참고하세요.
-
 on:
   push:
     branches: [main]
@@ -17,12 +10,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '21'
 
       - name: Cache Gradle wrapper distribution
@@ -32,26 +26,37 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
 
-      - name: Build backend (wrapper)
+      - name: Build backend (Spring)
         working-directory: backend/mini-job-service
         run: |
           chmod +x ./gradlew
           ./gradlew clean build
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: npm
+          cache-dependency-path: |
+            backend/mini-job-service-node/package-lock.json
+            frontend/mini-job-dashboard/package-lock.json
+
+      - name: Build backend (Node.js)
+        working-directory: backend/mini-job-service-node
+        run: |
+          npm ci
+          npm run build
+          npm test
 
       - name: Build frontend
         working-directory: frontend/mini-job-dashboard
         env:
-          # Set a sensible default API base for frontend builds in CI
-          VITE_API_BASE_URL: 'http://localhost:8080/api'
+          VITE_API_BASE_URL: http://localhost:8080/api
         run: |
           npm ci
-          # Lint before build and run tests if any (non-failing when no tests present)
           npm run lint --if-present
           npm run test:unit --if-present
           npm run build
@@ -61,17 +66,16 @@ jobs:
           echo "Running frontend dist smoke test"
           ./scripts/frontend-smoke-test.sh
 
-      - name: Frontend: Install Playwright browsers
+      - name: "Frontend: Install Playwright browsers"
         working-directory: frontend/mini-job-dashboard
         run: |
           npm ci
           npx playwright install --with-deps
 
-      - name: Frontend: Run Playwright E2E tests
+      - name: "Frontend: Run Playwright E2E tests"
         working-directory: frontend/mini-job-dashboard
         run: |
           npm ci
-          # The tests will run against the served dist at http://localhost:8081
           npm run test:e2e
 
       - name: Build C++ projects
@@ -83,5 +87,4 @@ jobs:
 
       - name: Run backend tests
         working-directory: backend/mini-job-service
-        run: |
-          ./gradlew test --no-daemon
+        run: ./gradlew test --no-daemon

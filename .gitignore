@@ -3,6 +3,7 @@ backend/mini-job-service/build/
 backend/mini-job-service/bin/
 frontend/mini-job-dashboard/dist/
 frontend/mini-job-dashboard/node_modules/
+backend/mini-job-service-node/dist/
 **/node_modules/
 build-logs/
 /.gradle/

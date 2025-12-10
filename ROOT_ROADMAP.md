@@ -10,6 +10,7 @@
 | 영역 | 프로젝트 | 설명 |
 |------|---------|------|
 | 백엔드 | `mini-job-service` | Spring Boot 기반 Job 관리 REST API |
+| 백엔드 | `mini-job-service-node` | Express + TypeScript 기반 Job 관리 REST API (프론트엔드와 동일 계약) |
 | 프론트엔드 | `mini-job-dashboard` | React 기반 Job 대시보드 UI |
 | C++ | `battle-game` | 콘솔 턴제 배틀 게임 |
 | C++ | `echo-server` | TCP 에코 서버/클라이언트 |
@@ -112,6 +113,8 @@ git checkout CPP-C0.1
 
 - [backend/mini-job-service/README.md](./backend/mini-job-service/README.md)
 - [backend/mini-job-service/TUTORIAL_BE.md](./backend/mini-job-service/TUTORIAL_BE.md)
+- [backend/mini-job-service-node/README.md](./backend/mini-job-service-node/README.md)
+- [backend/mini-job-service-node/TUTORIAL_BE_NODE.md](./backend/mini-job-service-node/TUTORIAL_BE_NODE.md)
 
 ### 프론트엔드
 

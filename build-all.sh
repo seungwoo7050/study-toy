@@ -34,6 +34,16 @@ else
   fi
 fi
 
+printf "\n== Backend: mini-job-service-node ==\n"
+cd "$ROOT_DIR/backend/mini-job-service-node"
+if command -v npm >/dev/null 2>&1; then
+  npm install
+  npm run build
+  npm test
+else
+  echo "npm not installed: skipping Node backend build"
+fi
+
 printf "\n== Frontend: mini-job-dashboard ==\n"
 cd "$ROOT_DIR/frontend/mini-job-dashboard"
 if command -v npm >/dev/null 2>&1; then
