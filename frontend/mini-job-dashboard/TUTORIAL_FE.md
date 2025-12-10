@@ -57,23 +57,39 @@
 ---
 
 프로덕션 빌드 및 정적 파일 확인
+
 1. 빌드:
    - `npm run build`
    - 산출물은 `dist/` 폴더에 생성됩니다.
 2. 간단한 정적 서버로 확인:
    - `npx serve dist` 또는 `npx http-server dist -p 8081`
-   - 브라우저에서 `http://localhost:8081` 열기
+   - 브라우저에서 `http://localhost:8081` 열기 (8081 포트도 백엔드 CORS 허용 origin에 포함됨)
 
 백엔드 연동 설정
-- 프론트엔드는 `src/services/JobApiService.ts`에서 백엔드 엔드포인트를 사용합니다.
-- 기본은 `http://localhost:8080/api` 입니다. (또는 `http://127.0.0.1:8080/api`)
-- Vite 환경변수로 값을 오버라이드하려면 프로젝트 루트에 `.env` 파일을 만들고 `VITE_API_BASE_URL`을 설정하세요. 예:
-  ```
-  VITE_API_BASE_URL="http://staging.example.com/api"
-  ```
+프론트엔드는 `src/services/JobApiService.ts`에서 백엔드 엔드포인트를 사용합니다.
+기본은 `http://localhost:8080/api` 입니다. (또는 `http://127.0.0.1:8080/api`)
+Vite 환경변수로 값을 오버라이드하려면 프로젝트 루트에 `.env` 파일을 만들고 `VITE_API_BASE_URL`을 설정하세요. 예:
+```
+VITE_API_BASE_URL="http://staging.example.com/api"
+```
 
 프론트엔드 코드는 `import.meta.env.VITE_API_BASE_URL`를 읽어 사용하므로 개발/배포 환경에 맞춰 쉽게 변경할 수 있습니다.
-- 필요하면 `JobApiService.ts`의 `BASE_URL`을 변경하거나, 빌드 시 환경 변수를 주입하도록 Vite 설정을 업데이트하세요.
+필요하면 `JobApiService.ts`의 `API_BASE_URL`을 변경하거나, 빌드 시 환경 변수를 주입하도록 Vite 설정을 업데이트하세요.
+
+Job 타입은 다음과 같이 유연하게 처리됩니다:
+```ts
+type Job = {
+  id: string;
+  title?: string;
+  type?: string;
+  description?: string;
+  payload?: string;
+  status: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+```
+API 응답에 따라 title/type/payload 등 다양한 필드가 들어올 수 있으며, 프론트엔드에서는 우선순위에 따라 표시됩니다.
 
 참고: 프로젝트에 포함된 여러 유틸/검증 스크립트는 레포의 중앙 문서 `DOCS/SCRIPTS.md`에서 목적과 사용방법을 확인하실 수 있습니다.
 

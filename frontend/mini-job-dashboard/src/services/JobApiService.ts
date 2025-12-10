@@ -6,12 +6,14 @@
 import { Job } from '../types/Job';
 
 type RawJob = {
-  id: string;
-  title: string;
+  id: string | number;
+  title?: string;
+  type?: string;
   description?: string;
+  payload?: string;
   status: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 // 기본값은 로컬 개발용: Vite 환경변수 `VITE_API_BASE_URL`을 사용하면 배포/테스트 환경에서 변경 가능합니다.
@@ -34,13 +36,17 @@ export class JobApiService {
         const status = (job.status && allowedStatuses.includes(job.status as Job['status']))
           ? (job.status as Job['status'])
           : 'PENDING';
+
+        const createdAt = job.createdAt ? new Date(job.createdAt) : new Date();
+        const updatedAt = job.updatedAt ? new Date(job.updatedAt) : createdAt;
+
         return {
-          id: job.id,
-          title: job.title,
-          description: job.description ?? '',
+          id: job.id.toString(),
+          title: job.title ?? job.type ?? '이름 없는 작업',
+          description: job.description ?? job.payload ?? '',
           status,
-          createdAt: new Date(job.createdAt),
-          updatedAt: new Date(job.updatedAt),
+          createdAt,
+          updatedAt,
         } as Job;
       });
     } catch (error) {
@@ -66,11 +72,16 @@ export class JobApiService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const job = await response.json();
+      const createdAt = job.createdAt ? new Date(job.createdAt) : new Date();
+      const updatedAt = job.updatedAt ? new Date(job.updatedAt) : createdAt;
       return {
         ...job,
-        createdAt: new Date(job.createdAt),
-        updatedAt: new Date(job.updatedAt),
-      };
+        title: job.title ?? job.type ?? jobData.title,
+        description: job.description ?? job.payload ?? jobData.description,
+        status: job.status ?? jobData.status,
+        createdAt,
+        updatedAt,
+      } as Job;
     } catch (error) {
       // 실패시 콘솔 대신 로깅/오류처리 로직으로 전환
       // 백엔드가 없는 경우 클라이언트에서 Job 생성 (개발용)

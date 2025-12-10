@@ -178,6 +178,7 @@ sudo apt install git
 | 백엔드 (Spring Boot) | 8080 | REST API 서버 |
 | 프론트엔드 (Vite) | 5173 | 개발 서버 (기본) |
 | 프론트엔드 (Vite) | 3000 | 개발 서버 (대안) |
+| 프론트엔드 (Vite) | 8081 | 개발 서버 (추가 허용, CORS)
 | PostgreSQL | 5432 | 데이터베이스 |
 | C++ echo-server | 9000 | TCP 에코 서버 |
 | C++ multi-chat-server | 9001 | TCP 채팅 서버 |
@@ -195,7 +196,8 @@ sudo apt install git
 
 2. **포트 변경 방법**:
    - 백엔드: `application.yml`에서 `server.port` 수정
-   - 프론트엔드: `vite.config.ts`에서 `server.port` 수정
+   - 프론트엔드: `vite.config.ts`에서 `server.port` 수정 (8081도 허용됨)
+   > 백엔드 CORS 설정에서 8081 포트도 허용되므로, 프론트엔드 개발 서버를 8081로 띄워도 정상적으로 동작합니다.
    - C++: 소스 코드 내 포트 상수 수정
 
 ---

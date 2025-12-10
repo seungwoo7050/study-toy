@@ -111,7 +111,7 @@ VITE_API_BASE_URL=http://localhost:8080/api
 - Node.js 버전이 ENV_SETUP.md에 명시된 버전 이상인지 확인한다.
 - `node -v`로 버전 확인
 
-### 개발 서버 포트 충돌 (3000 또는 5173 already in use)
+### 개발 서버 포트 충돌 (3000, 5173, 또는 8081 already in use)
 
 - 다른 개발 서버를 종료하거나, `vite.config.ts`에서 포트를 변경한다.
 
@@ -130,11 +130,11 @@ export default defineConfig({
 - 프론트에서 호출하는 API URL이 실제 백엔드 주소와 일치하는지 확인한다.
 
 ```
-Access to fetch at 'http://localhost:8080/api/jobs' from origin 'http://localhost:5173' 
+Access to fetch at 'http://localhost:8080/api/jobs' from origin 'http://localhost:5173' 또는 'http://localhost:8081'
 has been blocked by CORS policy
 ```
 
-→ 백엔드의 `config/WebConfig.java` 또는 `SecurityConfig.java`에서 CORS 설정 추가 필요
+→ 백엔드의 `config/WebConfig.java` 또는 `SecurityConfig.java`에서 CORS 설정에 8081 포트도 허용되어 있으므로, 개발 서버를 8081로 띄워도 정상 동작합니다.
 
 ### 빈 화면이 보이는 경우
 
