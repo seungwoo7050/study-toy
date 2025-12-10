@@ -22,3 +22,5 @@ Steps:
 4. Open http://localhost:5173 and verify the job appears in the list.
 
 Optional: You can use `scripts/frontend-smoke-test.sh` and verify the dist served properly for the E2E build. Running automated headless tests requires Playwright setup and is out of the scope of this sample exercise.
+
+참고: 스크립트에 대한 자세한 설명 및 사용방법은 `DOCS/SCRIPTS.md`를 참고하세요.

@@ -14,6 +14,12 @@
    - 권장: `npm ci` (lockfile 기반 안정적 설치)
 3. 개발 서버 실행 (hot reload):
    - `npm run dev`
+4. Unit tests (local learning):
+   - 프론트엔드 단위 테스트를 추가/학습하고 싶다면 Vitest를 사용합니다.
+   - 실행:
+      - `cd frontend/mini-job-dashboard`
+      - `npm ci`
+      - `npm run test:unit`
    - 브라우저에서 `http://localhost:5173` (Vite 기본 포트) 열기
 
 프로덕션 빌드 및 정적 파일 확인
@@ -35,6 +41,8 @@ VITE_API_BASE_URL="http://staging.example.com/api"
 
 프론트엔드 코드는 `import.meta.env.VITE_API_BASE_URL`를 읽어 사용하므로 개발/배포 환경에 맞춰 쉽게 변경할 수 있습니다.
 - 필요하면 `JobApiService.ts`의 `BASE_URL`을 변경하거나, 빌드 시 환경 변수를 주입하도록 Vite 설정을 업데이트하세요.
+
+참고: 프로젝트에 포함된 여러 유틸/검증 스크립트는 레포의 중앙 문서 `DOCS/SCRIPTS.md`에서 목적과 사용방법을 확인하실 수 있습니다.
 
 검증 시나리오
 1. 백엔드 실행:

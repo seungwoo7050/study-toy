@@ -20,6 +20,8 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) ?? 'http://lo
 export class JobApiService {
   // Job 목록 조회
   static async getJobs(): Promise<Job[]> {
+    // [LEARN] API 호출은 실패할 수 있으므로 예외를 처리해야 합니다.
+    //         클라이언트에서는 서버 부재 시 대체 값(더미 데이터)을 제공하여 개발 편의성을 높입니다.
     try {
       const response = await fetch(`${API_BASE_URL}/jobs`);
       if (!response.ok) {
@@ -50,6 +52,8 @@ export class JobApiService {
 
   // Job 생성
   static async createJob(jobData: Omit<Job, 'id' | 'createdAt' | 'updatedAt'>): Promise<Job> {
+    // [LEARN] POST 요청은 서버의 유효성 검증을 통과해야 하므로 서버 에러를 고려하여
+    //         에러 처리 전략을 정의해야 합니다. 학습용으로는 로컬 더미를 사용합니다.
     try {
       const response = await fetch(`${API_BASE_URL}/jobs`, {
         method: 'POST',
@@ -76,6 +80,7 @@ export class JobApiService {
 
   // 개발용 더미 데이터
   private static getDummyJobs(): Job[] {
+    // [LEARN] 실제 API가 없을 경우 빠르게 UI 동작을 확인하기 위한 로컬 더미 데이터를 제공합니다.
     return [
       {
         id: '1',
@@ -106,6 +111,7 @@ export class JobApiService {
 
   // 개발용 더미 Job 생성
   private static createDummyJob(jobData: Omit<Job, 'id' | 'createdAt' | 'updatedAt'>): Job {
+    // [LEARN] 클라이언트에서 임시로 ID를 생성하여 Job을 즉시 화면에 반영할 수 있도록 지원합니다.
     return {
       ...jobData,
       id: Date.now().toString(),
