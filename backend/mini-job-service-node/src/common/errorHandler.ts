@@ -25,5 +25,5 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
   // eslint-disable-next-line no-console
   console.error(`[error] status=${status} message=${message}`);
 
-  res.status(status).json({ error: message });
+  res.status(status).json({ status, message });
 }

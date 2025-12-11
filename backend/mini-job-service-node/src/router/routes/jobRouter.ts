@@ -8,7 +8,6 @@
 import { Router } from 'express';
 import { JobRepository } from '../../job/jobRepository';
 import { JobService } from '../../job/jobService';
-import { HttpError } from '../../common/errorHandler';
 
 // 싱글턴 저장소/서비스를 만들어 라우터 전체에서 재사용합니다.
 const repo = new JobRepository();
@@ -26,8 +25,7 @@ jobRouter.get('/', (_req, res) => {
 // GET /api/jobs/:id -> ID에 해당하는 Job을 반환. 존재하지 않으면 404
 jobRouter.get('/:id', (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    res.json(service.getJob(id));
+    res.json(service.getJob(req.params.id));
   } catch (err) {
     next(err);
   }
@@ -49,12 +47,19 @@ jobRouter.post('/', (req, res, next) => {
 // DELETE /api/jobs/:id -> Job을 삭제하고 204 상태를 반환. 존재하지 않으면 404
 jobRouter.delete('/:id', (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    if (Number.isNaN(id)) {
-      throw new HttpError(400, 'id must be a number');
-    }
-    service.deleteJob(id);
+    service.deleteJob(req.params.id);
     res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// [Order 5] Job 취소
+// POST /api/jobs/:id/cancel -> 진행 중인 Job을 FAILED 상태로 표시
+jobRouter.post('/:id/cancel', (req, res, next) => {
+  try {
+    const cancelled = service.cancelJob(req.params.id);
+    res.json(cancelled);
   } catch (err) {
     next(err);
   }

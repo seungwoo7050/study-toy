@@ -26,10 +26,10 @@ export class JobScheduler {
     const pending = this.service.findNextPending();
     if (!pending) return;
 
-    const running = this.service.transition(pending.id, 'RUNNING');
+    const running = this.service.transition(pending.id, 'IN_PROGRESS');
     setTimeout(() => {
       // 아주 단순한 성공 시뮬레이션
-      this.service.transition(running.id, 'DONE');
+      this.service.transition(running.id, 'COMPLETED');
     }, 1200);
   }
 }

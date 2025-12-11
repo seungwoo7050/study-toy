@@ -2,7 +2,7 @@
 
 > ⚠️ 이 리포지토리는 **학습용 토이 프로젝트**입니다. 실서비스 운영/보안/장애 대응을 전제로 설계되지 않았습니다.
 
-Express + TypeScript 기반의 Job 관리 REST API 서비스입니다. 기존 Spring Boot 버전(`backend/mini-job-service`)과 동일한 목적과 엔드포인트 계약을 따르며, `frontend/mini-job-dashboard`가 `VITE_API_BASE_URL`을 통해 이 서버(`http://localhost:8082/api`)에 연결될 수 있습니다.
+Express + TypeScript 기반의 Job 관리 REST API 서비스입니다. 기존 Spring Boot 버전(`backend/mini-job-service`)과 동일한 목적과 엔드포인트 계약을 따르며, `frontend/mini-job-dashboard`가 `VITE_API_BASE_URL`을 통해 이 서버(`http://localhost:8081/api`)에 연결될 수 있습니다.
 
 ---
 
@@ -48,17 +48,17 @@ Express + TypeScript 기반의 Job 관리 REST API 서비스입니다. 기존 Sp
 cd backend/mini-job-service-node
 npm install
 
-# 2) 개발 서버 실행 (기본 포트 8082)
+# 2) 개발 서버 실행 (기본 포트 8081)
 npm run dev
 # 또는 빌드 후 실행
 npm run build && npm start
 
 # 3) 헬스체크
-curl http://localhost:8082/health
+curl http://localhost:8081/health
 ```
 
 프론트엔드 연동 시 `frontend/mini-job-dashboard/.env` 또는 실행 환경에서
-`VITE_API_BASE_URL=http://localhost:8082/api`를 설정하면 됩니다.
+`VITE_API_BASE_URL=http://localhost:8081/api`를 설정하면 됩니다.
 
 ---
 

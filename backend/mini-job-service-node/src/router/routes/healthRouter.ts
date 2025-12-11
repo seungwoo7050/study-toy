@@ -7,5 +7,5 @@ import { Router } from 'express';
 
 export const healthRouter = Router();
 healthRouter.get('/', (_req, res) => {
-  res.json({ status: 'ok' });
+  res.json({ status: 'OK', message: 'mini-job-service-node is up' });
 });
