@@ -11,7 +11,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const appConfig = {
-  port: parseInt(process.env.PORT ?? '8082', 10),
+  port: parseInt(process.env.PORT ?? '8081', 10),
   jwtSecret: process.env.JWT_SECRET ?? 'dev-secret-change-me',
   jwtExpirationMs: parseInt(process.env.JWT_EXPIRATION ?? '86400000', 10),
 };

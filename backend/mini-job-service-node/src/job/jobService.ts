@@ -32,7 +32,11 @@ export class JobService {
 
   // [Order 3] 단일 Job 조회
   // 주어진 ID로 저장소에서 Job을 찾습니다. 존재하지 않으면 404를 던집니다.
-  getJob(id: number): Job {
+  getJob(id: string): Job {
+    if (!id) {
+      throw new HttpError(400, 'id is required');
+    }
+
     const job = this.repo.findById(id);
     if (!job) {
       throw new HttpError(404, `Job ${id} not found`);
@@ -42,22 +46,30 @@ export class JobService {
 
   // [Order 4] Job 삭제
   // ID로 Job을 삭제합니다. 존재하지 않으면 404를 반환합니다.
-  deleteJob(id: number): void {
+  deleteJob(id: string): void {
     const removed = this.repo.delete(id);
     if (!removed) {
       throw new HttpError(404, `Job ${id} not found`);
     }
   }
 
+  // [Order 4-1] Job 취소 (실패 상태로 표시)
+  // - 비동기 작업 취소를 흉내 내기 위해 FAILED 상태를 사용한다.
+  cancelJob(id: string): Job {
+    const job = this.getJob(id);
+    job.fail();
+    return job;
+  }
+
   // [Order 5] Job 상태 전이
   // 주어진 상태로 Job을 변경합니다. PENDING은 생성 시 자동으로 설정됩니다.
-  // - RUNNING: start() 호출
-  // - DONE: complete() 호출
+  // - IN_PROGRESS: start() 호출
+  // - COMPLETED: complete() 호출
   // - FAILED: fail() 호출
-  transition(id: number, status: JobStatus): Job {
+  transition(id: string, status: JobStatus): Job {
     const job = this.getJob(id);
-    if (status === 'RUNNING') job.start();
-    if (status === 'DONE') job.complete();
+    if (status === 'IN_PROGRESS') job.start();
+    if (status === 'COMPLETED') job.complete();
     if (status === 'FAILED') job.fail();
     return job;
   }

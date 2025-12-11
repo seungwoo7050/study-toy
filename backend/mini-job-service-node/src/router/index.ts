@@ -14,3 +14,4 @@ export const router = Router();
 router.use('/health', healthRouter);
 router.use('/api/jobs', jobRouter);
 router.use('/api/auth', authRouter);
+
