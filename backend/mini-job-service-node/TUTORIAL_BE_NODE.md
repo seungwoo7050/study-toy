@@ -21,7 +21,7 @@
 ```bash
 node -v
 npm -v
-````
+```
 
 ---
 
@@ -159,7 +159,7 @@ Content-Type: application/json; charset=utf-8
 * 내부적으로 `Map<string, Job>` 사용
 * 주요 메서드 예시:
 
-  * `save(job: Job): Job`
+  * `save(type: string, payload?: string): Job`
   * `findById(id: string): Job | undefined`
   * `findAll(): Job[]`
   * `delete(id: string): void`
@@ -177,7 +177,7 @@ Content-Type: application/json; charset=utf-8
   * `getJob(id)`
   * `listJobs()`
   * `cancelJob(id)`
-  * `markInProgress / markCompleted / markFailed`
+  * `transition(id, status)`
 
 [LEARN]
 컨트롤러(라우터)에서는 **입출력 & HTTP 프로토콜 처리**만 하고,
@@ -191,10 +191,12 @@ Content-Type: application/json; charset=utf-8
 
 라우터는 대략 이런 구조를 가집니다:
 
-* `GET /api/jobs` : Job 목록 조회
-* `GET /api/jobs/:id` : Job 단건 조회
-* `POST /api/jobs` : Job 생성
-* `POST /api/jobs/:id/cancel` : Job 취소
+* ``GET    /api/jobs`           : Job 목록 조회
+* ``GET    /api/jobs/:id`       : Job 단건 조회
+* ``POST   /api/jobs`           : Job 생성
+* ``DELETE /api/jobs/:id`       : Job 삭제
+* ``POST   /api/jobs/:id/cancel`: Job 취소 (FAILED 상태로 표시)
+
 
 [LEARN]
 Express에서는 `Router` 인스턴스를 만들어 경로/메서드 별로 핸들러를 연결합니다.
@@ -395,7 +397,7 @@ it('creates job via POST /api/jobs', async () => {
 ```env
 PORT=8081
 JWT_SECRET=local-dev-secret
-JWT_EXPIRES_IN=1h
+JWT_EXPIRATION=3600000 # ms 단위 만료시간(예: 1시간)
 ```
 
 * `appConfig.ts`에서 `process.env.PORT ?? 8081`처럼 기본값을 두고 읽습니다.
