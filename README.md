@@ -1,6 +1,3 @@
-
-
-
 # Toy Project Suite
 
 ---
