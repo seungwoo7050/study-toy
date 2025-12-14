@@ -14,6 +14,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK
+        id: setup-java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -28,6 +29,14 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             gradle-${{ runner.os }}-
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: |
+            platform-tools
+            platforms;android-34
+            build-tools;34.0.0
 
       - name: Build backend (Spring)
         working-directory: backend/mini-job-service
@@ -88,3 +97,9 @@ jobs:
       - name: Run backend tests
         working-directory: backend/mini-job-service
         run: ./gradlew test --no-daemon
+
+      - name: Build Android Compose sample
+        working-directory: android/hello-kotlin-todo
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon --stacktrace lint test assembleDebug
