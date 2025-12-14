@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Hello Kotlin Todo</string>
+    <string name="task_placeholder">할 일을 입력하세요</string>
+    <string name="add_task">추가</string>
+    <string name="empty_state">할 일이 없습니다. 새로운 작업을 추가해보세요.</string>
+</resources>

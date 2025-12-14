@@ -12,6 +12,7 @@
 | 백엔드 | `mini-job-service` | Spring Boot 기반 Job 관리 REST API |
 | 백엔드 | `mini-job-service-node` | Express + TypeScript 기반 Job 관리 REST API (프론트엔드와 동일 계약) |
 | 프론트엔드 | `mini-job-dashboard` | React 기반 Job 대시보드 UI |
+| 모바일 | `hello-kotlin-todo` | Jetpack Compose 기반 단일 화면 To-Do 샘플 |
 | C++ | `battle-game` | 콘솔 턴제 배틀 게임 |
 | C++ | `echo-server` | TCP 에코 서버/클라이언트 |
 | C++ | `multi-chat-server` | 다중 클라이언트 채팅 서버 (선택) |
@@ -84,6 +85,17 @@
 - 소켓 API를 이용해 TCP 서버/클라이언트를 구현할 수 있다.
 - 멀티스레드 서버 패턴을 이해한다.
 
+### 6단계: AND-A0.1 (Android Kotlin + Compose 기초)
+
+**학습 목표**: Android 앱 구조, Activity-Compose 브릿지, 상태 호이스팅, 미리보기
+
+- `AND-A0.1`: `hello-kotlin-todo` 실행 & To-Do 입력/토글 흐름 이해
+
+**이 단계를 끝내면**:
+- Gradle wrapper로 Android 앱을 빌드/설치할 수 있다.
+- Compose 기본 컴포저블(Text/Row/Column/LazyColumn/OutlinedTextField/Button/Checkbox)을 조합해 단일 화면을 구성할 수 있다.
+- 미리보기/테마 구조를 이용해 UI를 안전하게 변경할 수 있다.
+
 ---
 
 ## 3. Git 태그 체크아웃 방법
@@ -120,6 +132,12 @@ git checkout CPP-C0.1
 
 - [frontend/mini-job-dashboard/README.md](./frontend/mini-job-dashboard/README.md)
 - [frontend/mini-job-dashboard/TUTORIAL_FE.md](./frontend/mini-job-dashboard/TUTORIAL_FE.md)
+
+### 모바일(Android)
+
+- [android/README.md](./android/README.md)
+- [android/hello-kotlin-todo/README.md](./android/hello-kotlin-todo/README.md)
+- [guides/ANDROID_KOTLIN.md](./guides/ANDROID_KOTLIN.md)
 
 ### C++
 

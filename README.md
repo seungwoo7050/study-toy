@@ -9,6 +9,7 @@
 | 백엔드 (Spring) | Spring Boot, JPA, JWT, REST, CI | 엔드포인트 구현, DB 연동, 인증/인가, 예외처리, 테스트, CI |
 | 백엔드 (Node) | Express, TypeScript, JWT, REST | 동일한 Job API를 Node.js 스택으로 구현, 인메모리 저장, 테스트 |
 | 프론트엔드 | React, Vite, 상태관리, E2E, API | 컴포넌트/상태, 폼, API 연동, E2E/단위테스트, 환경변수 |
+| 모바일 | Android, Kotlin, Jetpack Compose | 단일 화면 To-Do 앱, Compose 상태/미리보기, Gradle 빌드 |
 | C++ | OOP, 네트워크, 멀티스레드 | 클래스 설계, TCP 서버/클라, 채팅, 빌드/실행 |
 
 
@@ -24,6 +25,7 @@
         - [프론트엔드 튜토리얼](./frontend/mini-job-dashboard/TUTORIAL_FE.md)
         - [C++ 튜토리얼](./cpp/TUTORIAL_CPP.md)
 4. **스크립트/유틸 참고**: 필요시 [`DOCS/SCRIPTS.md`](./DOCS/SCRIPTS.md)에서 빌드/테스트/정리 스크립트 사용법을 확인하세요.
+5. **모바일(Android) 실습**: [`android/README.md`](./android/README.md)와 [`guides/ANDROID_KOTLIN.md`](./guides/ANDROID_KOTLIN.md)에서 Compose 실습 흐름을 확인하세요.
 
 ---
 
@@ -47,6 +49,8 @@
 │       ├── src/            # React 컴포넌트, 서비스 등
 │       ├── package.json    # npm 패키지 관리
 │       └── ...
+├── android/               # Android Kotlin (Jetpack Compose)
+│   └── hello-kotlin-todo/ # Compose 단일 화면 To-Do 샘플
 ├── cpp/                    # C++ 예제
 │   ├── battle-game/        # 콘솔 턴제 배틀 게임
 │   ├── echo-server/        # TCP 에코 서버/클라이언트

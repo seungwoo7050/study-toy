@@ -7,7 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  backend-spring:
+    name: Backend (Spring)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -25,7 +26,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+          key: gradle-${{ runner.os }}-${{ hashFiles('backend/mini-job-service/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             gradle-${{ runner.os }}-
 
@@ -35,14 +36,19 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build
 
+  backend-node:
+    name: Backend (Node.js)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: |
-            backend/mini-job-service-node/package-lock.json
-            frontend/mini-job-dashboard/package-lock.json
+          cache-dependency-path: backend/mini-job-service-node/package-lock.json
 
       - name: Build backend (Node.js)
         working-directory: backend/mini-job-service-node
@@ -51,40 +57,96 @@ jobs:
           npm run build
           npm test
 
-      - name: Build frontend
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/mini-job-dashboard/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend/mini-job-dashboard
+        run: npm ci
+
+      - name: Lint, unit test, and build frontend
         working-directory: frontend/mini-job-dashboard
         env:
           VITE_API_BASE_URL: http://localhost:8080/api
         run: |
-          npm ci
           npm run lint --if-present
           npm run test:unit --if-present
           npm run build
 
       - name: Frontend smoke test (serve dist)
-        run: |
-          echo "Running frontend dist smoke test"
-          ./scripts/frontend-smoke-test.sh
+        run: ./scripts/frontend-smoke-test.sh
 
-      - name: "Frontend: Install Playwright browsers"
+      - name: Install Playwright browsers
         working-directory: frontend/mini-job-dashboard
-        run: |
-          npm ci
-          npx playwright install --with-deps
+        run: npx playwright install --with-deps
 
-      - name: "Frontend: Run Playwright E2E tests"
+      - name: Run Playwright E2E tests
         working-directory: frontend/mini-job-dashboard
-        run: |
-          npm ci
-          npm run test:e2e
+        run: npm run test:e2e
+
+  cpp:
+    name: C++
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Build C++ projects
         working-directory: cpp
         run: |
-          cd battle-game && g++ -std=c++17 -O2 -Wall main.cpp Character.cpp Player.cpp Monster.cpp -o battle-game || true
-          cd ../echo-server && ./build.sh || true
-          cd ../multi-chat-server && g++ -std=c++17 -O2 -Wall chat-server.cpp -o chat-server || true
+          cd battle-game && g++ -std=c++17 -O2 -Wall main.cpp Character.cpp Player.cpp Monster.cpp -o battle-game
+          cd ../echo-server && ./build.sh
+          cd ../multi-chat-server && g++ -std=c++17 -O2 -Wall chat-server.cpp -o chat-server
 
-      - name: Run backend tests
-        working-directory: backend/mini-job-service
-        run: ./gradlew test --no-daemon
+  android:
+    name: Android Compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Cache Gradle wrapper distribution
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/hello-kotlin-todo/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK components
+        run: |
+          yes | sdkmanager \
+            "platform-tools" \
+            "platforms;android-34" \
+            "build-tools;34.0.0"
+
+      - name: Set up Gradle for Android build
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: "8.9"
+
+      - name: Build Android Compose sample
+        working-directory: android/hello-kotlin-todo
+        run: gradle --no-daemon --stacktrace lint test assembleDebug
