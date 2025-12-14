@@ -40,6 +40,11 @@ jobs:
             "platforms;android-34" \
             "build-tools;34.0.0"
 
+      - name: Set up Gradle for Android build
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: "8.9"
+
       - name: Build backend (Spring)
         working-directory: backend/mini-job-service
         run: |
@@ -103,5 +108,4 @@ jobs:
       - name: Build Android Compose sample
         working-directory: android/hello-kotlin-todo
         run: |
-          chmod +x ./gradlew
-          ./gradlew --no-daemon --stacktrace lint test assembleDebug
+          gradle --no-daemon --stacktrace lint test assembleDebug
