@@ -144,6 +144,7 @@ Spring Boot로 서버를 띄우면, 브라우저 말고도 HTTP 클라이언트�
 * Postman
 * IntelliJ HTTP Client (`.http` 파일)
 * VSCode용 REST Client 확장
+* cURL (터미널에서 빠르게 확인 가능)
 
 #### Postman 기본
 
@@ -703,10 +704,14 @@ public class Note {
 }
 ```
 
+
 요청 DTO:
 
 ```java
+import jakarta.validation.constraints.NotBlank;
+
 public class NoteCreateRequest {
+    @NotBlank(message = "content must not be blank")
     private String content;
 
     public String getContent() {
@@ -717,6 +722,7 @@ public class NoteCreateRequest {
     }
 }
 ```
+
 
 응답 DTO:
 
@@ -870,10 +876,7 @@ public class NoteController {
     }
 
     @PostMapping
-    public ResponseEntity<NoteResponse> create(@RequestBody NoteCreateRequest request) {
-        if (request.getContent() == null || request.getContent().isBlank()) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<NoteResponse> create(@jakarta.validation.Valid @RequestBody NoteCreateRequest request) {
         NoteResponse created = noteService.create(request.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -897,6 +900,25 @@ Postman에서:
 }
 ```
 
+
+
+#### cURL로 호출 예시 (Postman 없이도 검증 가능)
+
+```bash
+# 전체 조회
+curl http://localhost:8080/notes
+
+# 생성
+curl -X POST http://localhost:8080/notes \
+  -H "Content-Type: application/json" \
+  -d '{"content":"메모 내용"}'
+
+# 단건 조회
+curl http://localhost:8080/notes/1
+
+# 삭제
+curl -X DELETE http://localhost:8080/notes/1 -i
+```
 #### 자주 하는 실수 & 팁
 
 * `@RequestMapping("/notes")`와 `@GetMapping("/notes")`를 동시에 써서 `/notes/notes`가 되는 경우
@@ -974,8 +996,53 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
+
+
+    // Validation 실패(400)도 공통 에러 응답으로 만들기
+    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(
+            org.springframework.web.bind.MethodArgumentNotValidException ex,
+            HttpServletRequest request
+    ) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+                .findFirst()
+                .orElse("Validation failed");
+
+        ErrorResponse body = new ErrorResponse(
+                Instant.now().toString(),
+                HttpStatus.BAD_REQUEST.value(),
+                message,
+                request.getRequestURI()
+        );
+        return ResponseEntity.badRequest().body(body);
+    }
+
+
 }
 ```
+
+### 7.3 (선택) Validation 의존성 추가 체크
+
+Spring Boot 3.x에서는 Validation이 기본 포함이 아닐 수 있으니, `@Valid`가 동작하지 않으면 의존성을 확인한다.
+
+* Gradle 예:
+
+```groovy
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+}
+```
+
+* Maven 예:
+
+```xml
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-validation</artifactId>
+</dependency>
+```
+
 
 `ErrorResponse` 예시:
 

@@ -112,7 +112,7 @@ React 자체는 "JS로 컴포넌트 작성 → DOM에 반영해주는 라이브�
     <title>My App</title>
   </head>
   <body>
-    <div id="root"></div> <!-- React가 이 div 안에 랜더링 -->
+    <div id="root"></div> <!-- React가 이 div 안에 렌더링 -->
     <script src="/main.js"></script>
   </body>
 </html>
@@ -280,6 +280,38 @@ npm run dev
 
 * Q: build는 언제 하나요?
   A: 배포 전. `npm run build` → `dist` 폴더 생성. 지금은 dev만 쓰면 된다.
+
+#### 참고: 개발 모드에서 useEffect가 2번 실행되는 것처럼 보일 때 (React 18 + StrictMode)
+
+Vite 기본 템플릿은 보통 `src/main.jsx`에서 `<React.StrictMode>`로 `<App />`을 감싼다.
+개발 모드에서 StrictMode는 사이드 이펙트(정리(cleanup) 누락 등)를 빨리 찾기 위해 일부 로직을 “한 번 더” 실행하는 것처럼 보이게 만들 수 있다(의도된 동작).
+
+* 현상: `useEffect(() => { fetch(...) }, [])`가 dev에서 2번 호출되는 것처럼 보임
+* 결론: **배포 빌드에서는 1번만 실행**된다.
+* 대응: 이펙트 cleanup을 정확히 작성하고, 네트워크 요청은 AbortController로 취소까지 처리해두면 혼란이 줄어든다.
+
+예시:
+
+```jsx
+import { useEffect, useState } from "react";
+
+useEffect(() => {
+  const controller = new AbortController();
+
+  fetch("/api/notes", { signal: controller.signal })
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch");
+      return res.json();
+    })
+    .then((data) => setTodos(data))
+    .catch((err) => {
+      if (err.name !== "AbortError") setError(err.message);
+    });
+
+  return () => controller.abort();
+}, []);
+```
+
 
 ---
 
@@ -477,6 +509,31 @@ count = count + 1;
 setCount(count + 1);
 ```
 
+
+#### 추가: 배열/객체 state는 “불변성(immutability)”을 지키며 업데이트하기
+
+Todo 같은 앱에서는 state가 보통 배열/객체다. React에서는 state를 **직접 변경(mutation)**하지 말고, 새 배열/객체를 만들어 교체하는 패턴을 기본으로 한다.
+
+```jsx
+// 배열에 추가
+setTodos((prev) => [{ id: 1, text: "new", done: false }, ...prev]);
+
+// 배열에서 삭제
+setTodos((prev) => prev.filter((t) => t.id !== id));
+
+// 특정 항목 수정(토글)
+setTodos((prev) =>
+  prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
+);
+```
+
+잘못된 예(직접 변경):
+
+```jsx
+todos.push(newTodo);   // X (원본 배열 변경)
+setTodos(todos);       // X (같은 배열 참조를 다시 set)
+```
+
 #### FAQ
 
 * Q: state는 어디에 두는 게 맞나요?
@@ -629,6 +686,165 @@ function TodoInput({ onAdd }) {
 
 ---
 
+
+
+### 5.4 Todo 앱 최소 동작 코드 (복붙용)
+
+이 섹션은 “설계/개념 이해” 이후, **최소 동작 Todo**를 빠르게 완성해서 화면에서 확인할 수 있도록 파일 단위 예시를 제공한다.
+
+#### 1) 라우팅 없이 바로 보기 (먼저 이걸로 동작 확인)
+
+`src/App.jsx`를 아래처럼 바꾸면, 라우팅을 붙이기 전에도 Todo가 바로 동작한다.
+
+```jsx
+// src/App.jsx
+import TodoPage from "./pages/TodoPage";
+
+export default function App() {
+  return <TodoPage />;
+}
+```
+
+#### 2) TodoPage
+
+```jsx
+// src/pages/TodoPage.jsx
+import { useMemo, useState } from "react";
+import { TodoInput } from "../components/TodoInput";
+import { TodoList } from "../components/TodoList";
+
+function makeTodo(text) {
+  const id =
+    (typeof crypto !== "undefined" && crypto.randomUUID && crypto.randomUUID()) ||
+    String(Date.now());
+  return { id, text, done: false };
+}
+
+export default function TodoPage() {
+  const [todos, setTodos] = useState([
+    makeTodo("React 공부"),
+    makeTodo("운동"),
+  ]);
+
+  const remaining = useMemo(
+    () => todos.filter((t) => !t.done).length,
+    [todos]
+  );
+
+  const addTodo = (text) => {
+    const newTodo = makeTodo(text);
+    setTodos((prev) => [newTodo, ...prev]);
+  };
+
+  const toggleTodo = (id) => {
+    setTodos((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
+    );
+  };
+
+  const deleteTodo = (id) => {
+    setTodos((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  return (
+    <div style={{ maxWidth: 480, margin: "24px auto", padding: 16 }}>
+      <h1>Todo</h1>
+      <p>남은 할 일: {remaining}</p>
+      <TodoInput onAdd={addTodo} />
+      <TodoList todos={todos} onToggle={toggleTodo} onDelete={deleteTodo} />
+    </div>
+  );
+}
+```
+
+#### 3) TodoInput / TodoList / TodoItem
+
+```jsx
+// src/components/TodoInput.jsx
+import { useState } from "react";
+
+export function TodoInput({ onAdd }) {
+  const [text, setText] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!text.trim()) return;
+    onAdd(text.trim());
+    setText("");
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: "flex", gap: 8 }}>
+      <input
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="할 일을 입력하세요"
+        style={{ flex: 1 }}
+      />
+      <button type="submit">추가</button>
+    </form>
+  );
+}
+```
+
+```jsx
+// src/components/TodoList.jsx
+import { TodoItem } from "./TodoItem";
+
+export function TodoList({ todos, onToggle, onDelete }) {
+  if (todos.length === 0) return <p style={{ marginTop: 12 }}>할 일이 없습니다.</p>;
+
+  return (
+    <ul style={{ listStyle: "none", padding: 0, marginTop: 12 }}>
+      {todos.map((todo) => (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          onToggle={() => onToggle(todo.id)}
+          onDelete={() => onDelete(todo.id)}
+        />
+      ))}
+    </ul>
+  );
+}
+```
+
+```jsx
+// src/components/TodoItem.jsx
+export function TodoItem({ todo, onToggle, onDelete }) {
+  return (
+    <li
+      style={{
+        display: "flex",
+        gap: 8,
+        alignItems: "center",
+        padding: "8px 0",
+        borderBottom: "1px solid #eee",
+      }}
+    >
+      <input type="checkbox" checked={todo.done} onChange={onToggle} />
+      <span
+        style={{
+          flex: 1,
+          textDecoration: todo.done ? "line-through" : "none",
+          opacity: todo.done ? 0.6 : 1,
+        }}
+      >
+        {todo.text}
+      </span>
+      <button onClick={onDelete}>삭제</button>
+    </li>
+  );
+}
+```
+
+#### 4) 라우팅 붙이기와 연결
+
+이제 6장 라우팅에서 `TodoPage`를 그대로 라우트에 연결하면 된다:
+
+```jsx
+// 예: <Route path="/" element={<TodoPage />} />
+```
 ## 6. 라우팅 기초 (react-router-dom)
 
 ### 6.1 SPA와 라우팅 개념
@@ -822,6 +1038,51 @@ async function fetchTodos() {
 }
 ```
 
+
+
+#### 개발 편의: Vite 프록시로 CORS 회피하기 (dev 전용)
+
+개발 중 React dev server(예: 5173)와 API 서버(예: 3000)가 포트가 다르면 CORS 에러가 흔하다.
+학습 단계에서는 서버에 CORS를 열기보다, Vite dev server 프록시로 “같은 출처처럼” 호출하면 편하다.
+
+1) `vite.config.js`에 proxy 설정 추가:
+
+```js
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      "/api": "http://localhost:3000",
+    },
+  },
+});
+```
+
+2) 프론트에서는 `/api`로 호출:
+
+```jsx
+fetch("/api/notes");
+```
+
+> 실제 API가 `/notes`라면, 서버 쪽에 `/api` prefix를 붙이거나(예: Express에서 `app.use("/api", ...)`),
+> 프록시를 `{ "/notes": "http://localhost:3000" }`처럼 맞춰도 된다.
+
+#### 환경 변수: Vite는 import.meta.env 사용
+
+Vite는 CRA처럼 `process.env`가 아니라 `import.meta.env`를 사용한다.
+
+```env
+# (예) .env.development
+VITE_API_BASE_URL=http://localhost:3000
+```
+
+```jsx
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+fetch(`${baseUrl}/notes`);
+```
 #### 자주 하는 실수 & 팁
 
 * CORS 에러 → 서버에서 CORS 허용 설정 필요. 프론트 문제라기보단 서버 설정 이슈.

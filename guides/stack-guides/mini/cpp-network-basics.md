@@ -43,7 +43,7 @@
 * **Windows**
 
   * **WSL + Ubuntu** 추천 → 위 Linux와 동일하게 설치
-  * 아니면 MinGW, MSYS2, Clang 등 가능하지만, 이 문서는 **리눅스/WSL 기준**으로 설명한다.
+  * 아니면 MinGW, MSYS2, Clang 등 가능하지만, WSL이 가장 간단
 
 #### Hello World 컴파일
 
@@ -132,7 +132,7 @@ g++ -std=c++17 main.cpp server.o -o server
 
 ---
 
-## 2. C++ 언어 기본 (네트워크에 필요한 만큼)
+## 2. C++ 언어 기본
 
 ### 2.1 포인터와 참조
 
@@ -151,17 +151,26 @@ void incrementByReference(int& r) {
 
 int main() {
     int x = 10;
-    incrementByPointer(&x); // 주소 넘김
-    incrementByReference(x); // 참조로 넘김
+    incrementByPointer(&x);   // 주소 넘김
+    incrementByReference(x);  // 참조로 넘김
 }
 ```
 
-* 포인터: **주소를 저장**하는 변수 (`int* p`)
-* 참조: **다른 변수의 별칭** (`int& r = x;`)
+* 포인터: **주소를 저장**하는 변수 (`int* p`), 값이 없을 수도 있음 (`nullptr`)
+* 참조: **다른 변수의 별칭** (`int& r = x;`), 항상 유효한 값이어야 함
 
 #### 실습 예제
 
-* 길이 3짜리 배열을 함수에 넘겨서, 함수 안에서 값을 2배로 만드는 코드 작성해보기.
+* 길이 3짜리 배열을 함수에 넘겨서, 함수 안에서 값을 2배로 만드는 코드 작성해보기
+
+```cpp
+void doubleArray(int* arr, size_t len) {
+    if (!arr) return;
+    for (size_t i = 0; i < len; ++i) {
+        arr[i] *= 2;
+    }
+}
+```
 
 #### 자주 하는 실수 & 팁
 
@@ -215,7 +224,7 @@ private:
 
 ### 2.3 클래스/구조체 & STL
 
-서버 설정, 상태, 버퍼 등을 구조화하기 위해 사용.
+서버 설정, 상태, 버퍼 등을 구조화하기 위해 사용
 
 ```cpp
 #include <string>
@@ -234,7 +243,16 @@ STL 기본 컨테이너:
 
 #### 실습 예제
 
-* `ServerConfig` 구조체에 `maxClients`, `bufferSize` 필드를 추가하고, 생성 시 초기값을 넣는 코드 작성.
+* `ServerConfig` 구조체에 `maxClients`, `bufferSize` 필드를 추가하고, 생성 시 초기값을 넣는 코드 작성
+
+```cpp
+struct ServerConfig {
+    std::string address = "0.0.0.0";
+    uint16_t port = 9000;
+    size_t maxClients = MAX_CLIENTS;
+    size_t bufferSize = MAX_BUFFER_SIZE; // int 보다는 
+};
+```
 
 #### 자주 하는 실수 & 팁
 
@@ -287,9 +305,10 @@ private:
 #### 자주 하는 실수 & 팁
 
 * include guard 미사용으로 인해 중복 정의 에러
-  → 항상 헤더 상단/하단에 `#ifndef / #define / #endif` 사용.
+  → 항상 헤더 상단/하단에 `#ifndef / #define / #endif` 사용
+  → `#pragma once`도 가능
 * 구현을 헤더에 다 넣어두고 여러 번 include해서 link 에러
-  → 함수 정의는 `.cpp`로 분리.
+  → 함수 정의는 `.cpp`로 분리
 
 ---
 
@@ -299,7 +318,7 @@ private:
 
 ```makefile
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2
+CXXFLAGS = -std=c++17 -Wall -Wextra -Werror -O2
 
 TARGET = tcp-echo-server
 SRCS = main.cpp tcp_echo_server.cpp
@@ -308,10 +327,18 @@ OBJS = $(SRCS:.cpp=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) $(OBJS) -o $(TARGET)
+  $(CXX) $(CXXFLAGS) $(OBJS) -o $(TARGET)
+
+$(OBJS): %.o: %.cpp
+  $(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS)
+fclean:
+  clean
+  rm -f $(TARGET)
+
+re: fclean all
 ```
 
 빌드:
@@ -383,6 +410,41 @@ nc 127.0.0.1 9000
 
 * 방화벽/보안 프로그램이 포트를 막는데, 코드만 의심
   → 같은 머신에서 `127.0.0.1`로 테스트하는 단계에서는, 거의 방화벽 문제는 아니다. 리모트 접속 시에는 방화벽도 확인.
+
+### 4.3 포트/프로세스 확인 (트러블슈팅)
+
+`bind: Address already in use` 같은 에러가 나면 “내 코드가 이상한가?”보다 먼저 **포트를 누가 쓰는지** 확인하는 게 빠르다.
+
+* Linux/WSL:
+
+```bash
+ss -lntp | grep :9000
+# 또는
+sudo lsof -i :9000
+```
+
+* macOS:
+
+```bash
+lsof -i :9000
+```
+
+### 4.4 nc(netcat) 옵션이 다를 때
+
+`nc`는 구현체(netcat-openbsd, traditional, ncat 등)에 따라 옵션이 조금 다를 수 있다.
+아래 중 하나가 안 되면 `nc -h`(도움말)로 확인해서 “listen + 포트 지정” 조합을 맞추자.
+
+* 예시(많이 쓰이는 패턴):
+
+```bash
+# 서버처럼 listen
+nc -l 9000
+# (안 되면) nc -l -p 9000
+
+# 클라이언트 접속
+nc 127.0.0.1 9000
+```
+
 
 ---
 
@@ -533,6 +595,10 @@ if (received < 0) {
 * recv 한 번 호출하면 "한 메시지 전부" 온다고 착각
   → TCP는 스트림이므로, 여러 번 나눠서 도착할 수 있다. 데모 단계에서는 단순히 한 번만 받는 방식을 쓰되, 이 한계를 인지할 것.
 
+* 상대가 연결을 끊은 뒤 send를 하면 프로그램이 “갑자기 죽는” 것처럼 보일 수 있음
+  → 일부 환경에서는 `SIGPIPE` 시그널로 프로세스가 종료될 수 있다. 학습 단계에서는 `SIGPIPE`를 무시하고 `send()`의 반환값/errno로 에러를 처리하는 편이 디버깅에 유리하다. (아래 6.3 코드에서 처리)
+
+
 ---
 
 ## 6. 단일 클라이언트 TCP 에코 서버 만들기
@@ -564,10 +630,13 @@ if (received < 0) {
 
 `server.cpp`:
 
+
 ```cpp
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
+#include <string>
+#include <csignal>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -575,13 +644,31 @@ if (received < 0) {
 #include <arpa/inet.h>
 #include <unistd.h>
 
+static bool parsePort(const char* s, int& outPort) {
+    try {
+        int port = std::stoi(std::string(s));
+        if (port < 1 || port > 65535) return false;
+        outPort = port;
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
 int main(int argc, char* argv[]) {
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " <port>\n";
         return 1;
     }
 
-    int port = std::atoi(argv[1]);
+    // send()가 상대 종료로 실패할 때 SIGPIPE로 죽는 상황을 피하기 위해 무시
+    std::signal(SIGPIPE, SIG_IGN);
+
+    int port = 0;
+    if (!parsePort(argv[1], port)) {
+        std::cerr << "Invalid port: " << argv[1] << " (1~65535)\n";
+        return 1;
+    }
 
     int serverFd = socket(AF_INET, SOCK_STREAM, 0);
     if (serverFd < 0) {
@@ -591,7 +678,11 @@ int main(int argc, char* argv[]) {
 
     // SO_REUSEADDR 설정 (개발 편의)
     int opt = 1;
-    setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    if (setsockopt(serverFd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        perror("setsockopt");
+        close(serverFd);
+        return 1;
+    }
 
     sockaddr_in addr{};
     addr.sin_family = AF_INET;
@@ -621,7 +712,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::cout << "Client connected\n";
+    char clientIp[INET_ADDRSTRLEN]{};
+    inet_ntop(AF_INET, &clientAddr.sin_addr, clientIp, sizeof(clientIp));
+    std::cout << "Client connected from " << clientIp << ":" << ntohs(clientAddr.sin_port) << "\n";
 
     char buffer[1024];
 
@@ -638,21 +731,26 @@ int main(int argc, char* argv[]) {
 
         // 그대로 돌려보내기
         ssize_t totalSent = 0;
+        bool sendFailed = false;
         while (totalSent < received) {
             ssize_t sent = send(clientFd, buffer + totalSent, received - totalSent, 0);
             if (sent < 0) {
                 perror("send");
+                sendFailed = true;
                 break;
             }
             totalSent += sent;
         }
+        if (sendFailed) break;
     }
 
     close(clientFd);
     close(serverFd);
     return 0;
 }
+
 ```
+
 
 빌드 & 실행:
 

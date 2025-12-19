@@ -251,13 +251,11 @@ git switch -c my-playground-BE-v0.3 BE-v0.3
 
 ---
 
-### 3.2 docker-compose.yml 예시
+### 3.2 docker-compose.yml 예시 (DB만 띄우기)
 
 프로젝트 루트에 `docker-compose.yml` 하나 두고, 대략 이런 식으로 쓴다고 보자:
 
 ```yaml
-version: "3.9"
-
 services:
   db:
     image: postgres:15
@@ -268,9 +266,13 @@ services:
       POSTGRES_DB: toydb
       POSTGRES_USER: toyuser
       POSTGRES_PASSWORD: toypass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U toyuser -d toydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - toy-postgres-data:/var/lib/postgresql/data
-
 volumes:
   toy-postgres-data:
 ```
@@ -319,6 +321,29 @@ docker compose down
 docker compose down -v
 ```
 
+### 3.3.1 (선택) .env로 값 분리하기
+
+학습 단계에서는 예시처럼 `docker-compose.yml`에 비밀번호를 직접 써도 되지만,
+조금만 협업/공유가 들어가면 아래 패턴이 안전하다.
+
+* `.env` (커밋 금지)
+* `.env.example` (커밋)
+
+`.env.example`:
+
+```env
+POSTGRES_DB=toydb
+POSTGRES_USER=toyuser
+POSTGRES_PASSWORD=toypass
+```
+
+`.gitignore`에 `.env` 추가:
+
+```gitignore
+.env
+```
+
+
 프로젝트에서 요구하지 않는 이상,
 학습 단계에서는 `up -d`, `logs`, `down` 정도만 많이 쓰게 된다.
 
@@ -362,7 +387,101 @@ password: 'toypass',
 
 ---
 
-## 4. 문서 활용 요약
+
+### 3.5 (선택) API까지 docker compose로 함께 띄우기 (Node 예시)
+
+DB만 컨테이너로 띄우는 것에서 한 단계 더 나가면,
+**API(예: Node/Express)**도 컨테이너로 묶어서 “누구나 같은 방식으로 실행”할 수 있다.
+
+아래 예시는 `./notes-api` 폴더에 Node API가 있다고 가정한다.
+
+#### 3.5.1 notes-api/Dockerfile (예시)
+
+```dockerfile
+FROM node:20-alpine
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+EXPOSE 3000
+CMD ["node", "dist/server.js"]
+```
+
+#### 3.5.2 docker-compose.yml (db + api)
+
+```yaml
+services:
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: toydb
+      POSTGRES_USER: toyuser
+      POSTGRES_PASSWORD: toypass
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U toyuser -d toydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - toy-postgres-data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./notes-api
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_USER: "toyuser"
+      DB_PASS: "toypass"
+      DB_NAME: "toydb"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  toy-postgres-data:
+```
+
+실행:
+
+```bash
+docker compose up -d --build
+docker compose logs -f api
+```
+
+> 포인트:
+>
+> * 로컬에서 앱이 DB에 붙을 땐 `DB_HOST=localhost`
+> * 컨테이너에서 앱이 DB에 붙을 땐 `DB_HOST=db` (서비스 이름)
+
+
+
+
+## 4. GitHub Actions (CI) – 어디까지가 “최소”인가?
+
+이 문서 세트는 기본적으로 로컬에서 실행하는 흐름을 다루지만,
+팀/학습 레포에서 “충분한 인프라”의 기준을 하나 넣으려면 **CI(지속적 통합)**가 가장 가성비가 좋다.
+
+* PR이 열리면 자동으로 lint/test/build
+* `main`에 merge되면 다시 한 번 검증
+* “내 환경에서는 됐는데…”를 크게 줄임
+
+GitHub Actions 템플릿과 복붙용 workflow는 별도 문서에 정리해두는 편이 관리가 쉽다:
+
+* `03-practical-github-actions-ci.md` 참고
+
+---
+
+## 5. 문서 활용 요약
 
 * **JWT / 인증**
   → 백엔드 튜토리얼에서 로그인, 인증/인가, `Authorization: Bearer` 헤더가 나올 때 이 문단 참고.
@@ -374,6 +493,9 @@ password: 'toypass',
 * **Docker + Postgres**
   → "Docker 띄우고 Postgres 접속하라"는 말이 나올 때,
   `docker compose up`과 DB 접속 정보를 맞추는 용도로 이 문단 참고.
+
+* **GitHub Actions / CI**
+  → PR/push마다 자동으로 검사(lint/test/build)를 돌리고 싶을 때 `03-practical-github-actions-ci.md` 참고.
 
 이 부록은 모르면 프로젝트가 "막히는" 부분이라기보다는,
 알면 디버깅/환경 세팅이 훨씬 덜 스트레스 받는 영역들만 모아 둔 것이다.

@@ -21,6 +21,7 @@
 * `Spring Boot 기초`
 * `React 기초`
 * `Node.js/Express + TypeScript 기초`
+* `Kotlin Android Compose 기초`
 
 문서를 따라가기에 충분하다.
 
@@ -65,8 +66,8 @@ OS별 세부 설치는 각 언어별 기초 문서와 프로젝트에서 다룬�
 
 예:
 
-* `/home/user/projects/toy-suite`
-* `C:\Users\user\projects\toy-suite`
+* `/home/user/projects/tutorial-project`
+* `C:\Users\user\projects\tutorial-project`
 
 **현재 디렉터리**:
 지금 터미널이 "어느 폴더 안에 있는지"를 의미한다.
@@ -84,8 +85,7 @@ pwd
 ls
 
 # 하위 디렉터리로 이동
-cd projects
-cd toy-suite
+cd tutorial-project
 
 # 상위 디렉터리로 이동
 cd ..
@@ -94,9 +94,11 @@ cd ..
 mkdir test-project
 
 # 파일/폴더 삭제 (주의)
-rm some-file.txt
-rm -r some-folder      # 폴더 전체 삭제
-rm -rf some-folder     # 강제 삭제 (실수하면 복구 거의 불가)
+rm hello.c
+rm -r hello/      # 폴더 전체 삭제
+rm -rf hello/     # 강제 삭제 (실수하면 복구 거의 불가)
+
+rmdir hello/      # 빈 폴더만 삭제 가능
 ```
 
 실제로 해볼 것:
@@ -106,20 +108,20 @@ rm -rf some-folder     # 강제 삭제 (실수하면 복구 거의 불가)
    ```bash
    mkdir dev
    cd dev
-   mkdir toy-playground
-   cd toy-playground
+   mkdir tutorial-project
+   cd tutorial-project
    pwd
    ```
-2. `ls` 쳐서 폴더가 잘 보이는지 확인한다.
+2. `ls` 명령어로 현재 폴더가 비어 있는지 확인한다.
 
 ### 2.3 상대 경로 vs 절대 경로
 
 * **절대 경로**: 루트부터 전체를 다 적은 경로
 
-  * 예: `/home/user/dev/toy-playground`
+  * 예: `/home/user/dev/tutorial-project`
 * **상대 경로**: 현재 디렉터리를 기준으로 적는 경로
 
-  * 예: `../other-project`, `./src`
+  * 예: `../mini-project`, `./src`
 
 기본 규칙:
 
@@ -129,8 +131,8 @@ rm -rf some-folder     # 강제 삭제 (실수하면 복구 거의 불가)
 예:
 
 ```bash
-cd ~/dev/toy-playground   # 절대/홈 기준
-cd ../other-project       # 상대 경로
+cd ~/dev/tutorial-project  # 절대/홈 기준
+cd ../mini-project         # 상대 경로
 ```
 
 이 감각이 없으면, 이후 `cd` 할 때마다 길을 잃는다.
@@ -154,7 +156,7 @@ Git은:
 
 ### 3.2 레포 클론(clone)
 
-GitHub 같은 곳에 있는 리포를 내 컴퓨터로 가져오는 명령:
+GitHub 같은 곳에 있는 원격 저장소(레포)를 내 컴퓨터로 복사하는 명령:
 
 ```bash
 git clone <레포_URL>
@@ -164,8 +166,8 @@ cd <레포_폴더명>
 예:
 
 ```bash
-git clone https://github.com/example/toy-project-suite.git
-cd toy-project-suite
+git clone https://github.com/example/tutorial-project.git
+cd tutorial-project
 ```
 
 ### 3.3 상태 확인
@@ -188,9 +190,9 @@ git status
 2. 변경을 "스냅샷에 포함시키겠다"는 표시:
 
    ```bash
-   git add 파일이름
+   git add 파일이름  # 특정 파일만 포함시키기
    # 혹은
-   git add .
+   git add .         # 현재 디렉터리의 모든 변경 파일 포함
    ```
 
 3. 커밋(버전 하나 만들기):
@@ -231,6 +233,11 @@ git checkout tags/태그이름
 ```
 
 브랜치/태그가 실제로 무엇으로 설정되어 있는지는 레포 설명을 기준으로 한다.
+
+> **브랜치? 태그?**  
+> 둘 다 특정 시점의 커밋을 가리킨다.  
+> 브랜치는 계속 바뀌는 "가지" 같은 개념이고,  
+> 태그는 특정 버전에 "이름표"를 붙이는 개념이다.
 
 ---
 
@@ -279,7 +286,7 @@ git checkout tags/태그이름
   * 브라우저에서 돌아감
   * 화면(UI)을 그리면서 API를 호출
 
-이 레포의 토이 프로젝트들은 결국:
+이 레포의 미니 프로젝트들은 결국:
 
 * C++로 콘솔/네트워크 프로그램
 * Spring/Node로 백엔드
@@ -305,12 +312,15 @@ git checkout tags/태그이름
 ```text
 let hp = 100
 hp = hp - 30
+print(hp)  # 70
 ```
 
 개념:
 
 * "이름 → 값" 매핑이 생긴다.
 * 이름으로 값을 읽고, 다시 덮어쓸 수 있다.
+* 대부분의 언어는 `let`/`var`/`int`/`string` 등으로 변수를 선언한다.
+* 변수는 **메모리의 특정 위치**에 이름을 붙인 것이다.
 
 ### 5.2 타입(Type)
 
@@ -472,6 +482,7 @@ print(damages[1])  # 20
 1. **제일 위가 아니라 "중간의 중요한 줄"을 읽는다.**
 
    * 보통 스택 트레이스 중간에 **내 코드 파일 이름**이 적힌 줄이 핵심이다.
+      * 스택 트레이스: 에러가 난 지점까지 함수 호출이 어떻게 쌓였는지 보여주는 목록
 2. 적어도 다음은 눈에 익혀둔다.
 
    * 파일 이름
@@ -487,6 +498,9 @@ print(damages[1])  # 20
 1. 에러 메시지에서 **언어/프레임워크 이름 + 핵심 단어**만 뽑는다.
 
    * 예: `spring boot 401 unauthorized jwt`, `nodejs ECONNREFUSED`, `c++ segmentation fault vector`
+      * `spring boot 401 unauthorized jwt`: Spring Boot에서 JWT 관련 401 에러
+      * `nodejs ECONNREFUSED`: Node.js에서 연결 거부 에러
+      * `c++ segmentation fault vector`: C++에서 벡터 관련 세그멘테이션 폴트
 2. 그대로 구글/검색엔진에 붙여 넣는다.
 3. 공식 문서/StackOverflow/블로그 글을 읽으면서,
    "내 상황과 같은 부분"을 찾는다.

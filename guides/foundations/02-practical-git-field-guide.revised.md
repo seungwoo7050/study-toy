@@ -236,6 +236,92 @@ git add -p
 git commit -m "part 2"
 ```
 
+
+### 5.3 과거 커밋의 메시지/날짜 수정 (HEAD가 아닌 “어떤 커밋이든”)
+
+> 전제: **히스토리 재작성(rewrite history)** 이다. 수정한 커밋의 해시가 바뀌고, 그 뒤의 커밋 해시도 연쇄적으로 바뀐다.
+> 공유 브랜치(`main`, `develop`)에서는 금지. **내 브랜치(또는 혼자 쓰는 브랜치)**에서만 하고, 원격에 이미 푸시했다면 마지막에 `--force-with-lease`가 필요하다.
+
+#### 5.3.1 수정 대상 커밋 찾기 / 확인
+
+```bash
+git log --oneline --decorate -n 30
+
+# 날짜/작성자/커미터 정보를 자세히 보고 싶으면
+git show --no-patch --pretty=fuller <커밋해시>
+```
+
+`pretty=fuller`에서:
+
+* `AuthorDate` = 작성 날짜(커밋 메시지에 같이 남는 “작성 시각”)
+* `CommitDate` = 커미터 날짜(히스토리 재작성 시 보통 이게 갱신됨)
+
+#### 5.3.2 특정 커밋 하나만 수정하기 (rebase -i + edit/reword)
+
+예: `<TARGET>` 커밋의 **메시지와 날짜를 둘 다** 바꾸고 싶다.
+
+```bash
+git rebase -i <TARGET>^
+```
+
+에디터가 열리면 `<TARGET>` 줄을 찾아:
+
+* 메시지만 바꿀 거면 `pick` → `reword`
+* 메시지/날짜(또는 내용)까지 손댈 거면 `pick` → `edit`
+
+rebase가 해당 커밋에서 멈추면, 아래처럼 amend 한다.
+
+##### (A) 메시지 + 날짜를 동시에 바꾸기
+
+```bash
+# 예: 2025-12-15 10:30:00 (KST)로 맞추기
+export NEW_DATE="2025-12-15T10:30:00+09:00"
+
+GIT_COMMITTER_DATE="$NEW_DATE" \
+  git commit --amend -m "chore: update docs wording" --date "$NEW_DATE"
+```
+
+##### (B) 날짜만 바꾸기 (메시지 유지)
+
+```bash
+export NEW_DATE="2025-12-15T10:30:00+09:00"
+
+GIT_COMMITTER_DATE="$NEW_DATE" \
+  git commit --amend --no-edit --date "$NEW_DATE"
+```
+
+이후 계속 진행:
+
+```bash
+git rebase --continue
+```
+
+#### 5.3.3 가장 첫 커밋(루트 커밋)까지 포함해 수정하기
+
+```bash
+git rebase -i --root
+```
+
+#### 5.3.4 merge 커밋이 있는 브랜치에서(선택)
+
+기본 rebase는 merge 커밋을 “평평하게” 만들 수 있다. merge 구조를 유지하고 싶으면:
+
+```bash
+git rebase -i --rebase-merges <TARGET>^
+```
+
+#### 5.3.5 원격에 이미 푸시한 브랜치라면 (주의)
+
+히스토리 재작성 후에는 원격도 강제로 갱신해야 한다.
+
+```bash
+git push --force-with-lease
+```
+
+`--force-with-lease`는 “내가 마지막으로 본 원격 상태”와 다르면 실패하므로, `--force`보다 안전하다.
+
+
+
 ---
 
 ## 6. 브랜치/리모트 정리: 삭제, prune, upstream

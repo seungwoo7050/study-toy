@@ -413,6 +413,27 @@ app.listen(PORT, () => {
 });
 ```
 
+
+
+#### 빠른 테스트 (cURL로 바로 확인)
+
+서버 실행(`npm run dev`) 후 아래를 순서대로 실행해보면 동작이 바로 검증됩니다.
+
+```bash
+# 목록 조회 (처음엔 빈 배열)
+curl http://localhost:3000/notes
+
+# 메모 생성
+curl -X POST http://localhost:3000/notes \
+  -H "Content-Type: application/json" \
+  -d '{"text":"첫 메모"}'
+
+# 다시 목록 조회
+curl http://localhost:3000/notes
+
+# 삭제 (id는 위 생성 응답에서 확인)
+curl -X DELETE http://localhost:3000/notes/1
+```
 #### 실전 팁 & 자주 하는 실수
 - req.body가 undefined면 `express.json()` 미들웨어가 빠진 것!
 - 라우터 순서가 중요: 404 미들웨어는 항상 마지막에
@@ -547,6 +568,10 @@ npx tsc --init
   }
 }
 ```
+
+> 참고: `package.json`에 `"type": "module"`을 설정하면(ESM 모드) import/실행 방식이 달라집니다.
+> 이 문서는 **CommonJS 기준**(`"type": "module"` 없이)으로 설명합니다.
+
 
 ---
 
@@ -832,7 +857,6 @@ app.listen(PORT, () => {
 ---
 
 ## 8. 환경 변수 / 설정 분리 (기본만)
-dotenv.config();
 
 DB 연결, 포트 등 설정값을 코드에 직접 쓰면 나중에 관리가 힘들어집니다. **.env 파일로 분리**하면 환경별로 쉽게 관리할 수 있습니다.
 
@@ -840,8 +864,11 @@ DB 연결, 포트 등 설정값을 코드에 직접 쓰면 나중에 관리가 �
 
 ```bash
 npm install dotenv
-npm install --save-dev @types/dotenv
 ```
+
+> (참고) dotenv는 버전에 따라 타입이 포함되어 있을 수 있습니다.
+> 만약 TS에서 타입 관련 문제가 생기면 그때 `@types/dotenv`를 추가해도 됩니다.
+
 
 프로젝트 루트(최상위 폴더)에 `.env` 파일 생성:
 
@@ -873,6 +900,13 @@ app.listen(PORT, () => {
 
 ---
 
+
+
+#### .gitignore에 .env 추가 (중요)
+
+```gitignore
+.env
+```
 #### 실전 팁 & 자주 하는 실수
 - `.env` 파일은 **절대 깃허브에 올리지 말 것!** (`.gitignore`에 추가)
 - 환경 변수 값이 undefined면 오타/경로/파일 위치를 확인
